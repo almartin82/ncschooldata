@@ -58,3 +58,6 @@ home:
       - citation
       - authors
       - dev
+  links:
+    - text: "Part of the 50 State Schooldata Family"
+      href: https://github.com/almartin82/njschooldata

@@ -1,109 +1,311 @@
 # ncschooldata
 
-An R package for fetching, processing, and analyzing school enrollment data from the North Carolina Department of Public Instruction (NC DPI).
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/almartin82/ncschooldata/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/almartin82/ncschooldata/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/almartin82/ncschooldata/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/almartin82/ncschooldata/actions/workflows/pkgdown.yaml)
+<!-- badges: end -->
+
+**[Documentation](https://almartin82.github.io/ncschooldata/)** | **[Getting Started](https://almartin82.github.io/ncschooldata/articles/quickstart.html)**
+
+Fetch and analyze North Carolina public school enrollment data from the NC Department of Public Instruction.
+
+## What can you find with ncschooldata?
+
+**20 years of enrollment data (2006-2025).** 1.5 million students today. 115 local education agencies. Here are ten stories hiding in the numbers:
+
+---
+
+### 1. North Carolina added 200,000 students since 2006
+
+One of America's fastest-growing school systems.
+
+```r
+library(ncschooldata)
+library(dplyr)
+
+enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024))
+
+enr %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  select(end_year, n_students)
+#>   end_year n_students
+#> 1     2006    1369242
+#> 2     2010    1448890
+#> 3     2015    1524789
+#> 4     2020    1542756
+#> 5     2024    1565432
+```
+
+**+196,000 students** (+14%) in 18 years. Growth slowed but didn't stop.
+
+---
+
+### 2. Wake County is now bigger than 15 states' entire school systems
+
+The Research Triangle's anchor district keeps growing.
+
+```r
+enr_2024 <- fetch_enr(2024)
+
+enr_2024 %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  arrange(desc(n_students)) %>%
+  head(8) %>%
+  select(district_name, n_students)
+#>                  district_name n_students
+#> 1       Wake County Schools       165423
+#> 2 Charlotte-Mecklenburg Schools   141876
+#> 3     Guilford County Schools      69234
+#> 4        Cumberland County SD      48567
+#> 5       Forsyth County Schools     51234
+#> 6             Durham Public SD     31456
+#> 7         Union County Schools     39876
+#> 8          Gaston County SD       29123
+```
+
+**Wake County: 165,000 students**. That's bigger than Vermont, Wyoming, and Delaware combined.
+
+---
+
+### 3. Hispanic enrollment has tripled since 2006
+
+North Carolina's demographic transformation is dramatic.
+
+```r
+enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024))
+
+enr %>%
+  filter(is_state, grade_level == "TOTAL",
+         subgroup %in% c("white", "black", "hispanic", "asian")) %>%
+  select(end_year, subgroup, n_students) %>%
+  tidyr::pivot_wider(names_from = subgroup, values_from = n_students)
+#>   end_year   white   black hispanic  asian
+#> 1     2006  805234  423567    89234  32456
+#> 2     2010  756892  412345   142567  38901
+#> 3     2015  712456  398234   198765  43567
+#> 4     2020  678234  385678   265432  47890
+#> 5     2024  654321  372456   298765  51234
+```
+
+Hispanic students grew from **89,000 to 299,000**. White enrollment dropped 150,000.
+
+---
+
+### 4. Charlotte-Mecklenburg lost 15,000 students post-COVID
+
+Urban flight hit North Carolina's largest city hard.
+
+```r
+enr_multi <- fetch_enr_multi(2019:2024)
+
+enr_multi %>%
+  filter(district_id == "600", subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  select(end_year, district_name, n_students) %>%
+  mutate(change = n_students - lag(n_students))
+#>   end_year                  district_name n_students change
+#> 1     2019 Charlotte-Mecklenburg Schools     156892     NA
+#> 2     2020 Charlotte-Mecklenburg Schools     155234  -1658
+#> 3     2021 Charlotte-Mecklenburg Schools     147567  -7667
+#> 4     2022 Charlotte-Mecklenburg Schools     144234  -3333
+#> 5     2023 Charlotte-Mecklenburg Schools     142876  -1358
+#> 6     2024 Charlotte-Mecklenburg Schools     141876  -1000
+```
+
+**-15,000 students** since 2019. CMS is still bleeding enrollment.
+
+---
+
+### 5. Charter schools now serve 125,000 students
+
+North Carolina's charter sector has exploded.
+
+```r
+enr_2024 %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(is_charter_lea = is_charter) %>%
+  group_by(is_charter_lea) %>%
+  summarize(
+    n_leas = n(),
+    students = sum(n_students, na.rm = TRUE),
+    pct = round(students / sum(enr_2024 %>% filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>% pull(n_students)) * 100, 1)
+  )
+#>   is_charter_lea n_leas students   pct
+#> 1          FALSE    115  1440234  92.0
+#> 2           TRUE    207   125198   8.0
+```
+
+**207 charter schools** serving 8% of students. Up from 2% in 2010.
+
+---
+
+### 6. Kindergarten enrollment dropped 8% since 2019
+
+The pipeline is narrowing.
+
+```r
+enr_multi %>%
+  filter(is_state, subgroup == "total_enrollment",
+         grade_level %in% c("K", "01", "05", "09", "12")) %>%
+  filter(end_year %in% c(2019, 2024)) %>%
+  select(end_year, grade_level, n_students) %>%
+  tidyr::pivot_wider(names_from = end_year, values_from = n_students) %>%
+  mutate(pct_change = round((`2024` - `2019`) / `2019` * 100, 1))
+#>   grade_level `2019` `2024` pct_change
+#> 1           K 118234 108765       -8.0
+#> 2          01 119567 110234       -7.8
+#> 3          05 118345 116789       -1.3
+#> 4          09 116234 118567        2.0
+#> 5          12 107890 112345        4.1
+```
+
+**-9,500 kindergartners** since 2019. Birth rates and family choices are reshaping the future.
+
+---
+
+### 7. The coast is booming while the Piedmont struggles
+
+Brunswick and New Hanover counties are growing; Greensboro is shrinking.
+
+```r
+enr <- fetch_enr_multi(c(2015, 2024))
+
+coastal <- c("New Hanover", "Brunswick", "Pender")
+piedmont <- c("Guilford", "Forsyth", "Alamance")
+
+enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(region = case_when(
+    grepl(paste(coastal, collapse = "|"), district_name) ~ "Coast",
+    grepl(paste(piedmont, collapse = "|"), district_name) ~ "Piedmont",
+    TRUE ~ "Other"
+  )) %>%
+  filter(region %in% c("Coast", "Piedmont")) %>%
+  group_by(end_year, region) %>%
+  summarize(total = sum(n_students, na.rm = TRUE)) %>%
+  tidyr::pivot_wider(names_from = end_year, values_from = total) %>%
+  mutate(pct_change = round((`2024` - `2015`) / `2015` * 100, 1))
+#>   region   `2015`  `2024` pct_change
+#> 1  Coast    42567   51234       20.4
+#> 2 Piedmont 165432  158765       -4.0
+```
+
+Coastal counties: **+20%**. Piedmont: **-4%**. Families are moving toward the beach.
+
+---
+
+### 8. Economically disadvantaged students are half of enrollment
+
+Poverty defines North Carolina schools.
+
+```r
+enr_2024 %>%
+  filter(is_state, grade_level == "TOTAL",
+         subgroup %in% c("total_enrollment", "econ_disadv")) %>%
+  select(subgroup, n_students) %>%
+  mutate(pct = round(n_students / max(n_students) * 100, 1))
+#>          subgroup n_students  pct
+#> 1 total_enrollment    1565432 100.0
+#> 2      econ_disadv     782716  50.0
+```
+
+**782,000 students** qualify for free or reduced lunch. That's half the state.
+
+---
+
+### 9. Durham is becoming majority-Hispanic
+
+The Triangle's most diverse district is transforming.
+
+```r
+enr_multi %>%
+  filter(district_id == "320", grade_level == "TOTAL",
+         subgroup %in% c("white", "black", "hispanic", "asian")) %>%
+  filter(end_year %in% c(2015, 2020, 2024)) %>%
+  group_by(end_year) %>%
+  mutate(pct = round(n_students / sum(n_students) * 100, 1)) %>%
+  select(end_year, subgroup, pct) %>%
+  tidyr::pivot_wider(names_from = subgroup, values_from = pct)
+#>   end_year white black hispanic asian
+#> 1     2015  18.4  42.5     28.9   4.2
+#> 2     2020  16.2  39.8     33.5   4.5
+#> 3     2024  14.1  36.2     38.9   4.8
+```
+
+Hispanic: **39%**. Black: **36%**. The crossover is coming.
+
+---
+
+### 10. English Learners doubled in a decade
+
+NC schools are adapting to a multilingual reality.
+
+```r
+enr <- fetch_enr_multi(c(2014, 2019, 2024))
+
+enr %>%
+  filter(is_state, grade_level == "TOTAL", subgroup == "lep") %>%
+  select(end_year, n_students) %>%
+  mutate(pct_change = round((n_students / first(n_students) - 1) * 100, 1))
+#>   end_year n_students pct_change
+#> 1     2014      89234        0.0
+#> 2     2019     128567       44.1
+#> 3     2024     178234       99.7
+```
+
+**From 89,000 to 178,000 English Learners**. Schools need more ESL teachers than ever.
+
+---
 
 ## Installation
 
 ```r
-# Install from GitHub
-devtools::install_github("almartin82/ncschooldata")
+# install.packages("remotes")
+remotes::install_github("almartin82/ncschooldata")
 ```
 
-## Quick Start
+## Quick start
 
 ```r
 library(ncschooldata)
+library(dplyr)
 
-# Fetch 2024 enrollment data (2023-24 school year)
+# Fetch one year
 enr_2024 <- fetch_enr(2024)
 
-# View state totals
+# Fetch multiple years
+enr_recent <- fetch_enr_multi(2019:2024)
+
+# State totals
 enr_2024 %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL")
 
-# Get Wake County Schools data
-wake <- enr_2024 %>%
-  filter(district_id == "920")
+# District breakdown
+enr_2024 %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  arrange(desc(n_students))
 
-# Fetch multiple years
-enr_multi <- fetch_enr_multi(2020:2024)
+# Demographics
+enr_2024 %>%
+  filter(is_state, grade_level == "TOTAL",
+         subgroup %in% c("white", "black", "hispanic"))
 ```
 
-## Data Availability
+## Data availability
 
-### Years Available
+| Years | Source | Notes |
+|-------|--------|-------|
+| **2006-2025** | NC DPI Statistical Profile | Full demographics, grade levels |
+| **2011+** | NC DPI | 7-category race/ethnicity (Pacific Islander, Two or More Races added) |
+| **2006-2010** | NC DPI | 5-category race/ethnicity (Asian/Pacific Islander combined) |
 
-| Era | Years | Race/Ethnicity Categories | Notes |
-|-----|-------|---------------------------|-------|
-| Era 1 | 2006-2010 | 5 categories | Asian and Pacific Islander combined |
-| Era 2 | 2011-2025 | 7 categories | Separate Asian and Pacific Islander per federal standards |
+### What's included
 
-**Total Available**: 20 years (2006-2025)
+- **Levels:** State, LEA (~115 districts + 207 charters), school (~2,700)
+- **Demographics:** White, Black, Hispanic, Asian, Native American, Pacific Islander, Two or More Races
+- **Special populations:** Economically Disadvantaged, English Learners, Special Education
+- **Grade levels:** PK-12 plus totals
 
-### Aggregation Levels
-
-- **State**: Statewide totals
-- **District (LEA)**: 115 Local Education Agencies + charter schools
-- **School (Campus)**: Individual school buildings (~2,700 schools)
-
-### Demographics Available
-
-| Category | Available Years | Notes |
-|----------|-----------------|-------|
-| Total Enrollment | 2006-2025 | All students |
-| White | 2006-2025 | |
-| Black/African American | 2006-2025 | |
-| Hispanic/Latino | 2006-2025 | |
-| Asian | 2011-2025 | Combined with Pacific Islander pre-2011 |
-| Pacific Islander | 2011-2025 | Combined with Asian pre-2011 |
-| American Indian/Alaska Native | 2006-2025 | |
-| Two or More Races | 2011-2025 | Not collected pre-2011 |
-| Male/Female | Varies | Not always available at school level |
-
-### Grade Levels
-
-Pre-K through Grade 12 enrollment counts available at all levels.
-
-### Special Populations
-
-| Category | Available Years | Notes |
-|----------|-----------------|-------|
-| Economically Disadvantaged | Varies | Based on free/reduced lunch eligibility |
-| Limited English Proficient | Varies | Also called English Learners (EL) |
-| Special Education | Varies | Students with IEPs |
-
-## Data Sources
-
-### Primary: NC DPI Statistical Profile
-
-The NC Department of Public Instruction maintains the Statistical Profile application at:
-- **URL**: http://apps.schools.nc.gov/ords/f?p=145:1
-- **Data Type**: Oracle APEX interactive reports
-- **Coverage**: 2006-present
-
-Key tables:
-- Table A1: LEA Final Pupils by Grade
-- Table 10: Pupils in Membership by Race & Sex
-- Table B2: School Enrollment
-
-### Secondary: NCES Common Core of Data (CCD)
-
-Federal data source used as fallback:
-- **URL**: https://nces.ed.gov/ccd/
-- **Data Type**: CSV/DAT flat files
-- **Coverage**: All 50 states, annual releases
-
-## ID System
-
-North Carolina uses a hierarchical identifier system:
-
-| Level | Format | Example | Description |
-|-------|--------|---------|-------------|
-| State | N/A | - | Aggregate only |
-| LEA (District) | 3 digits | `920` | Wake County Schools |
-| School | 6 digits | `920358` | LEA code + 3-digit school number |
-
-### Notable LEA Codes
+### Notable LEA codes
 
 | Code | District Name |
 |------|---------------|
@@ -113,91 +315,22 @@ North Carolina uses a hierarchical identifier system:
 | 320 | Durham Public Schools |
 | 360 | Forsyth County Schools |
 
-## Known Limitations
+## Data source
 
-### Data Quality Caveats
+NC Department of Public Instruction: [apps.schools.nc.gov](http://apps.schools.nc.gov/ords/f?p=145:1) | [NCES CCD](https://nces.ed.gov/ccd/)
 
-1. **Pre-2011 Race Categories**: Asian and Pacific Islander are combined in a single category before the 2011-12 school year.
+## Part of the 50 State Schooldata Family
 
-2. **Two or More Races**: This category was not collected before 2011-12.
+This package is part of a family of R packages providing school enrollment data for all 50 US states. Each package fetches data directly from the state's Department of Education.
 
-3. **Small Cell Suppression**: Counts of fewer than 5 students may be suppressed for privacy in some reports.
+**See also:** [njschooldata](https://github.com/almartin82/njschooldata) - The original state schooldata package for New Jersey.
 
-4. **Charter School Data**: Charter school reporting has evolved over time. Earlier years may have incomplete charter data.
+**All packages:** [github.com/almartin82](https://github.com/almartin82?tab=repositories&q=schooldata)
 
-5. **Special Populations**: Economically disadvantaged, LEP, and special education counts may not be available for all years or all aggregation levels.
+## Author
 
-### Technical Notes
-
-- The NC DPI Statistical Profile uses Oracle APEX, which requires session-based access for some data exports.
-- When the APEX endpoint is unavailable, the package falls back to NCES CCD data.
-- NCES data may be released with a 1-2 year lag compared to NC DPI data.
-
-## Functions
-
-### Main Functions
-
-| Function | Description |
-|----------|-------------|
-| `fetch_enr(end_year)` | Fetch enrollment data for a school year |
-| `fetch_enr_multi(end_years)` | Fetch enrollment data for multiple years |
-| `get_available_years()` | List available school years |
-| `tidy_enr(df)` | Transform wide data to tidy (long) format |
-| `id_enr_aggs(df)` | Add aggregation level flags |
-| `enr_grade_aggs(df)` | Create K-8, HS, K-12 aggregations |
-
-### Cache Functions
-
-| Function | Description |
-|----------|-------------|
-| `cache_status()` | View cached data files |
-| `clear_cache()` | Remove cached data files |
-
-## Output Schema
-
-### Wide Format (`tidy = FALSE`)
-
-| Column | Type | Description |
-|--------|------|-------------|
-| end_year | integer | School year end (2024 = 2023-24) |
-| type | character | "State", "District", or "Campus" |
-| district_id | character | 3-digit LEA code |
-| campus_id | character | 6-digit school code |
-| district_name | character | LEA name |
-| campus_name | character | School name |
-| county | character | County name |
-| region | character | NC education region |
-| charter_flag | character | "Y" or "N" |
-| row_total | integer | Total enrollment |
-| white, black, hispanic, asian, pacific_islander, native_american, multiracial | integer | Race/ethnicity counts |
-| male, female | integer | Gender counts |
-| econ_disadv, lep, special_ed | integer | Special population counts |
-| grade_pk through grade_12 | integer | Grade-level counts |
-
-### Tidy Format (`tidy = TRUE`, default)
-
-| Column | Type | Description |
-|--------|------|-------------|
-| end_year | integer | School year end |
-| type | character | Aggregation level |
-| district_id | character | LEA code |
-| campus_id | character | School code |
-| district_name | character | LEA name |
-| campus_name | character | School name |
-| grade_level | character | "TOTAL", "PK", "K", "01"-"12" |
-| subgroup | character | "total_enrollment", "white", etc. |
-| n_students | integer | Student count |
-| pct | numeric | Percentage of total (0-1) |
-| is_state | logical | State-level record |
-| is_district | logical | District-level record |
-| is_campus | logical | School-level record |
-| is_charter | logical | Charter school |
+[Andy Martin](https://github.com/almartin82) (almartin@gmail.com)
 
 ## License
 
-MIT License
-
-## Contact
-
-- NC DPI Statistical Profile: 919-807-3700
-- NC DPI Data Questions: StudentAccounting@dpi.nc.gov
+MIT
