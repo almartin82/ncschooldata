@@ -1,0 +1,60 @@
+url: https://almartin82.github.io/ncschooldata/
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left:
+      - intro
+      - reference
+      - articles
+    right:
+      - search
+      - github
+  components:
+    github:
+      icon: fa-github
+      href: https://github.com/almartin82/ncschooldata
+      aria-label: GitHub
+
+reference:
+  - title: Fetch Data
+    desc: Functions for downloading enrollment data
+    contents:
+      - fetch_enr
+      - fetch_enr_multi
+      - get_available_years
+
+  - title: Transform Data
+    desc: Functions for reshaping and processing data
+    contents:
+      - tidy_enr
+      - id_enr_aggs
+      - enr_grade_aggs
+
+  - title: Caching
+    desc: Functions for managing cached data
+    contents:
+      - cache_status
+      - clear_cache
+
+  - title: Package
+    contents:
+      - ncschooldata-package
+
+articles:
+  - title: Getting Started
+    navbar: ~
+    contents:
+      - ncschooldata
+
+home:
+  sidebar:
+    structure:
+      - links
+      - license
+      - community
+      - citation
+      - authors
+      - dev

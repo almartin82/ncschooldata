@@ -1,0 +1,70 @@
+#' ncschooldata: Fetch and Process North Carolina School Data
+#'
+#' Downloads and processes school data from the North Carolina Department of
+#' Public Instruction (NC DPI). Provides functions for fetching enrollment data
+#' from the Statistical Profile system and transforming it into tidy format
+#' for analysis.
+#'
+#' @section Main functions:
+#' \describe{
+#'   \item{\code{\link{fetch_enr}}}{Fetch enrollment data for a school year}
+#'   \item{\code{\link{fetch_enr_multi}}}{Fetch enrollment data for multiple years}
+#'   \item{\code{\link{get_available_years}}}{List available school years}
+#'   \item{\code{\link{tidy_enr}}}{Transform wide data to tidy (long) format}
+#'   \item{\code{\link{id_enr_aggs}}}{Add aggregation level flags}
+#'   \item{\code{\link{enr_grade_aggs}}}{Create grade-level aggregations}
+#' }
+#'
+#' @section Cache functions:
+#' \describe{
+#'   \item{\code{\link{cache_status}}}{View cached data files}
+#'   \item{\code{\link{clear_cache}}}{Remove cached data files}
+#' }
+#'
+#' @section ID System:
+#' North Carolina uses a hierarchical ID system:
+#' \itemize{
+#'   \item LEA (District) codes: 3 digits (e.g., 920 = Wake County Schools)
+#'   \item School codes: 6 digits (LEA code + 3-digit school number)
+#' }
+#'
+#' @section Data Sources:
+#' Data is sourced from:
+#' \itemize{
+#'   \item NC DPI Statistical Profile: \url{http://apps.schools.nc.gov/ords/f?p=145:1}
+#'   \item NCES Common Core of Data: \url{https://nces.ed.gov/ccd/}
+#' }
+#'
+#' @section Format Eras:
+#' \describe{
+#'   \item{Era 1 (2006-2010)}{Asian and Pacific Islander combined in one category}
+#'   \item{Era 2 (2011-present)}{Seven separate race/ethnicity categories per federal standards}
+#' }
+#'
+#' @section Known Limitations:
+#' \itemize{
+#'   \item Pre-2011 data combines Asian and Pacific Islander into one category
+#'   \item Some small cell sizes may be suppressed for privacy
+#'   \item Charter school data availability varies by year
+#' }
+#'
+#' @docType package
+#' @name ncschooldata-package
+#' @aliases ncschooldata
+#' @keywords internal
+"_PACKAGE"
+
+#' Pipe operator
+#'
+#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom dplyr %>%
+#' @usage lhs \%>\% rhs
+#' @param lhs A value or the magrittr placeholder.
+#' @param rhs A function call using the magrittr semantics.
+#' @return The result of calling `rhs(lhs)`.
+NULL
