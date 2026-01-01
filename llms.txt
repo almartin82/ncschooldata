@@ -4,8 +4,8 @@
 **[Getting
 Started](https://almartin82.github.io/ncschooldata/articles/quickstart.html)**
 
-Fetch and analyze North Carolina public school enrollment data from the
-NC Department of Public Instruction.
+Fetch and analyze North Carolina school enrollment data from the NC
+Department of Public Instruction in R or Python.
 
 ## What can you find with ncschooldata?
 
@@ -283,6 +283,8 @@ remotes::install_github("almartin82/ncschooldata")
 
 ## Quick start
 
+### R
+
 ``` r
 library(ncschooldata)
 library(dplyr)
@@ -306,6 +308,32 @@ enr_2024 %>%
 enr_2024 %>%
   filter(is_state, grade_level == "TOTAL",
          subgroup %in% c("white", "black", "hispanic"))
+```
+
+### Python
+
+``` python
+import pyncschooldata as nc
+
+# Fetch one year
+enr_2024 = nc.fetch_enr(2024)
+
+# Fetch multiple years
+enr_recent = nc.fetch_enr_multi([2019, 2020, 2021, 2022, 2023, 2024])
+
+# State totals
+state_total = enr_2024[
+    (enr_2024['is_state'] == True) &
+    (enr_2024['subgroup'] == 'total_enrollment') &
+    (enr_2024['grade_level'] == 'TOTAL')
+]
+
+# District breakdown
+districts = enr_2024[
+    (enr_2024['is_district'] == True) &
+    (enr_2024['subgroup'] == 'total_enrollment') &
+    (enr_2024['grade_level'] == 'TOTAL')
+].sort_values('n_students', ascending=False)
 ```
 
 ## Data availability
