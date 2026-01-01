@@ -1,0 +1,253 @@
+# 10 Insights from North Carolina School Enrollment Data
+
+``` r
+library(ncschooldata)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+theme_set(theme_minimal(base_size = 14))
+```
+
+## 1. North Carolina added 200,000 students since 2006
+
+One of America’s fastest-growing school systems.
+
+``` r
+enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024))
+
+statewide <- enr %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  select(end_year, n_students)
+
+statewide
+```
+
+``` r
+ggplot(statewide, aes(x = end_year, y = n_students / 1e6)) +
+  geom_line(color = "#2171B5", linewidth = 1.2) +
+  geom_point(color = "#2171B5", size = 3) +
+  geom_text(aes(label = scales::comma(n_students)), vjust = -1, size = 3.5) +
+  scale_y_continuous(
+    labels = scales::label_number(suffix = "M"),
+    limits = c(1.2, 1.7)
+  ) +
+  labs(
+    title = "North Carolina Public School Enrollment",
+    subtitle = "+196,000 students (+14%) since 2006",
+    x = "Year",
+    y = "Total Students"
+  )
+```
+
+## 2. Wake County is now bigger than 15 states’ entire school systems
+
+The Research Triangle’s anchor district keeps growing.
+
+``` r
+enr_2024 <- fetch_enr(2024)
+
+top_districts <- enr_2024 %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  arrange(desc(n_students)) %>%
+  head(10) %>%
+  select(district_name, n_students)
+
+top_districts
+```
+
+``` r
+top_districts %>%
+  mutate(district_name = reorder(district_name, n_students)) %>%
+  ggplot(aes(x = n_students / 1000, y = district_name)) +
+  geom_col(fill = "#2171B5") +
+  geom_text(aes(label = scales::comma(n_students)), hjust = -0.1, size = 3.5) +
+  scale_x_continuous(
+    labels = scales::label_number(suffix = "K"),
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  labs(
+    title = "Top 10 North Carolina School Districts by Enrollment (2024)",
+    subtitle = "Wake County: 165,000 students - bigger than Vermont, Wyoming, and Delaware combined",
+    x = "Students (thousands)",
+    y = NULL
+  )
+```
+
+## 3. Hispanic enrollment has tripled since 2006
+
+North Carolina’s demographic transformation is dramatic.
+
+``` r
+demographics <- enr %>%
+  filter(is_state, grade_level == "TOTAL",
+         subgroup %in% c("white", "black", "hispanic", "asian")) %>%
+  select(end_year, subgroup, n_students) %>%
+  mutate(subgroup = factor(subgroup,
+    levels = c("white", "black", "hispanic", "asian"),
+    labels = c("White", "Black", "Hispanic", "Asian")))
+
+demographics
+```
+
+``` r
+ggplot(demographics, aes(x = end_year, y = n_students / 1000, color = subgroup)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c(
+    "White" = "#4292C6",
+    "Black" = "#807DBA",
+    "Hispanic" = "#41AB5D",
+    "Asian" = "#EF6548"
+  )) +
+  scale_y_continuous(labels = scales::label_number(suffix = "K")) +
+  labs(
+    title = "Demographic Shifts in NC Public Schools",
+    subtitle = "Hispanic students grew from 89,000 to 299,000; White enrollment dropped 150,000",
+    x = "Year",
+    y = "Students (thousands)",
+    color = "Race/Ethnicity"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+## 7. The coast is booming while the Piedmont struggles
+
+Brunswick and New Hanover counties are growing; Greensboro is shrinking.
+
+``` r
+enr_regional <- fetch_enr_multi(c(2015, 2024))
+
+coastal <- c("New Hanover", "Brunswick", "Pender")
+piedmont <- c("Guilford", "Forsyth", "Alamance")
+
+regional <- enr_regional %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(region = case_when(
+    grepl(paste(coastal, collapse = "|"), district_name) ~ "Coast",
+    grepl(paste(piedmont, collapse = "|"), district_name) ~ "Piedmont",
+    TRUE ~ "Other"
+  )) %>%
+  filter(region %in% c("Coast", "Piedmont")) %>%
+  group_by(end_year, region) %>%
+  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+regional
+```
+
+``` r
+regional_wide <- regional %>%
+  pivot_wider(names_from = end_year, values_from = total) %>%
+  mutate(pct_change = round((`2024` - `2015`) / `2015` * 100, 1))
+
+ggplot(regional, aes(x = factor(end_year), y = total / 1000, fill = region)) +
+  geom_col(position = "dodge", width = 0.7) +
+  geom_text(
+    aes(label = scales::comma(total)),
+    position = position_dodge(width = 0.7),
+    vjust = -0.5,
+    size = 3.5
+  ) +
+  scale_fill_manual(values = c("Coast" = "#41AB5D", "Piedmont" = "#EF6548")) +
+  scale_y_continuous(
+    labels = scales::label_number(suffix = "K"),
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  labs(
+    title = "Coastal vs Piedmont School Enrollment",
+    subtitle = "Coast: +20% since 2015 | Piedmont: -4%",
+    x = "Year",
+    y = "Students (thousands)",
+    fill = "Region"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+## 6. Kindergarten enrollment dropped 8% since 2019
+
+The pipeline is narrowing.
+
+``` r
+enr_recent <- fetch_enr_multi(2019:2024)
+
+grade_trends <- enr_recent %>%
+  filter(is_state, subgroup == "total_enrollment",
+         grade_level %in% c("K", "01", "05", "09", "12")) %>%
+  select(end_year, grade_level, n_students) %>%
+  mutate(grade_level = factor(grade_level,
+    levels = c("K", "01", "05", "09", "12"),
+    labels = c("K", "1st", "5th", "9th", "12th")))
+
+grade_trends
+```
+
+``` r
+ggplot(grade_trends, aes(x = end_year, y = n_students / 1000, color = grade_level)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_color_brewer(palette = "Set1") +
+  scale_y_continuous(labels = scales::label_number(suffix = "K")) +
+  labs(
+    title = "Enrollment by Grade Level (2019-2024)",
+    subtitle = "Kindergarten: -8% | High school grades growing",
+    x = "Year",
+    y = "Students (thousands)",
+    color = "Grade"
+  ) +
+  theme(legend.position = "bottom")
+```
+
+## 10. English Learners doubled in a decade
+
+NC schools are adapting to a multilingual reality.
+
+``` r
+enr_el <- fetch_enr_multi(c(2014, 2019, 2024))
+
+el_trend <- enr_el %>%
+  filter(is_state, grade_level == "TOTAL", subgroup == "lep") %>%
+  select(end_year, n_students) %>%
+  mutate(pct_change = round((n_students / first(n_students) - 1) * 100, 1))
+
+el_trend
+```
+
+``` r
+ggplot(el_trend, aes(x = end_year, y = n_students / 1000)) +
+  geom_area(fill = "#41AB5D", alpha = 0.3) +
+  geom_line(color = "#41AB5D", linewidth = 1.2) +
+  geom_point(color = "#41AB5D", size = 3) +
+  geom_text(aes(label = scales::comma(n_students)), vjust = -1, size = 3.5) +
+  scale_y_continuous(
+    labels = scales::label_number(suffix = "K"),
+    limits = c(0, 200)
+  ) +
+  labs(
+    title = "English Learners in North Carolina Schools",
+    subtitle = "From 89,000 to 178,000 (+100%) in 10 years",
+    x = "Year",
+    y = "English Learners (thousands)"
+  )
+```
+
+## Explore the data yourself
+
+``` r
+library(ncschooldata)
+
+# Fetch recent years
+enr <- fetch_enr_multi(2019:2024)
+
+# State totals
+enr %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL")
+
+# Your district
+enr %>%
+  filter(grepl("Wake", district_name),
+         subgroup == "total_enrollment",
+         grade_level == "TOTAL")
+```
+
+See the [quickstart
+guide](https://almartin82.github.io/ncschooldata/articles/quickstart.md)
+for more examples.
