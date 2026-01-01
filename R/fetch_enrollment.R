@@ -10,7 +10,7 @@
 #' Fetch North Carolina enrollment data
 #'
 #' Downloads and processes enrollment data from the North Carolina Department
-#' of Public Instruction Statistical Profile or NCES Common Core of Data.
+#' of Public Instruction Statistical Profile.
 #'
 #' @param end_year A school year. Year is the end of the academic year - eg 2023-24
 #'   school year is year '2024'. Valid values are 2006-2025.
@@ -34,7 +34,7 @@
 #' enr_fresh <- fetch_enr(2024, use_cache = FALSE)
 #'
 #' # Filter to Wake County Schools
-#' wake <- enr_2024 %>%
+#' wake <- enr_2024 |>
 #'   dplyr::filter(district_id == "920")
 #' }
 fetch_enr <- function(end_year, tidy = TRUE, use_cache = TRUE) {
@@ -59,7 +59,7 @@ fetch_enr <- function(end_year, tidy = TRUE, use_cache = TRUE) {
 
   # Optionally tidy
   if (tidy) {
-    processed <- tidy_enr(processed) %>%
+    processed <- tidy_enr(processed) |>
       id_enr_aggs()
   }
 
@@ -87,8 +87,8 @@ fetch_enr <- function(end_year, tidy = TRUE, use_cache = TRUE) {
 #' enr_multi <- fetch_enr_multi(2022:2024)
 #'
 #' # Track enrollment trends
-#' enr_multi %>%
-#'   dplyr::filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+#' enr_multi |>
+#'   dplyr::filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") |>
 #'   dplyr::select(end_year, n_students)
 #' }
 fetch_enr_multi <- function(end_years, tidy = TRUE, use_cache = TRUE) {

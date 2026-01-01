@@ -14,6 +14,6 @@ List with lea and school data frames
 }
 \description{
 Downloads LEA and school enrollment data from NC DPI's Statistical Profile
-system or NCES CCD data.
+system.
 }
 \keyword{internal}

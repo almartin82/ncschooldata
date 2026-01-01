@@ -15,7 +15,7 @@ process_enr(raw_data, end_year)
 Processed data frame with standardized columns
 }
 \description{
-Transforms raw data from NC DPI or NCES into a standardized schema
+Transforms raw data from NC DPI into a standardized schema
 combining LEA and school data.
 }
 \keyword{internal}

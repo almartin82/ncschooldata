@@ -317,7 +317,7 @@ enr_2024 %>%
 
 ## Data source
 
-NC Department of Public Instruction: [apps.schools.nc.gov](http://apps.schools.nc.gov/ords/f?p=145:1) | [NCES CCD](https://nces.ed.gov/ccd/)
+NC Department of Public Instruction: [apps.schools.nc.gov](http://apps.schools.nc.gov/ords/f?p=145:1)
 
 ## Part of the 50 State Schooldata Family
 

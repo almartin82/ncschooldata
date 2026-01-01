@@ -32,7 +32,6 @@
 #' Data is sourced from:
 #' \itemize{
 #'   \item NC DPI Statistical Profile: \url{http://apps.schools.nc.gov/ords/f?p=145:1}
-#'   \item NCES Common Core of Data: \url{https://nces.ed.gov/ccd/}
 #' }
 #'
 #' @section Format Eras:
@@ -54,17 +53,3 @@
 #' @keywords internal
 "_PACKAGE"
 
-#' Pipe operator
-#'
-#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
-#'
-#' @name %>%
-#' @rdname pipe
-#' @keywords internal
-#' @export
-#' @importFrom dplyr %>%
-#' @usage lhs \%>\% rhs
-#' @param lhs A value or the magrittr placeholder.
-#' @param rhs A function call using the magrittr semantics.
-#' @return The result of calling `rhs(lhs)`.
-NULL

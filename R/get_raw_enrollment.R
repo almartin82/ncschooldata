@@ -4,9 +4,7 @@
 #
 # This file contains functions for downloading raw enrollment data from NC DPI.
 #
-# Data comes from multiple sources:
-# - NC DPI Statistical Profile API (2006-present): Oracle APEX REST endpoints
-# - NCES CCD (Common Core of Data): Federal data source for all states
+# Data comes from NC DPI Statistical Profile API (2006-present): Oracle APEX REST endpoints
 #
 # North Carolina uses:
 # - LEA Codes: 3-digit codes (e.g., 920 = Wake County)
@@ -20,21 +18,34 @@
 
 #' Get available years
 #'
-#' Returns the range of years for which enrollment data is available.
+#' Returns the range of years for which enrollment data is available
+#' from the North Carolina Department of Public Instruction (NC DPI).
 #'
-#' @return Character vector of available years
+#' @return A list with:
+#'   \item{min_year}{First available year (2006)}
+#'   \item{max_year}{Last available year (2025)}
+#'   \item{description}{Description of data availability}
 #' @export
 #' @examples
-#' get_available_years()
+#' years <- get_available_years()
+#' print(years$min_year)
+#' print(years$max_year)
 get_available_years <- function() {
-  2006:2025
+  list(
+    min_year = 2006,
+    max_year = 2025,
+    description = paste(
+      "North Carolina enrollment data from NC DPI Statistical Profile.",
+      "Available years: 2006-2025."
+    )
+  )
 }
 
 
 #' Download raw enrollment data from NC DPI
 #'
 #' Downloads LEA and school enrollment data from NC DPI's Statistical Profile
-#' system or NCES CCD data.
+#' system.
 #'
 #' @param end_year School year end (2023-24 = 2024)
 #' @return List with lea and school data frames
@@ -45,24 +56,14 @@ get_raw_enr <- function(end_year) {
 
   message(paste("Downloading NC enrollment data for", end_year, "..."))
 
-  # Try NC DPI Statistical Profile first
+  # Try NC DPI Statistical Profile
   result <- tryCatch({
     download_nc_stat_profile(end_year)
   }, error = function(e) {
-    message("  NC DPI API unavailable, trying NCES CCD...")
-    NULL
+    stop(paste("Failed to download data for year", end_year,
+               "\nNC DPI unavailable.",
+               "\nError:", e$message))
   })
-
-  # Fallback to NCES CCD if NC DPI fails
-  if (is.null(result)) {
-    result <- tryCatch({
-      download_nces_ccd(end_year)
-    }, error = function(e) {
-      stop(paste("Failed to download data for year", end_year,
-                 "\nNC DPI and NCES CCD both unavailable.",
-                 "\nError:", e$message))
-    })
-  }
 
   # Add end_year column
   result$lea$end_year <- end_year
@@ -220,154 +221,6 @@ download_stat_profile_table <- function(end_year, table_type) {
     # Fall through to alternative data source
     stop(e$message)
   })
-}
-
-
-#' Download from NCES CCD
-#'
-#' Downloads enrollment data from NCES Common Core of Data.
-#' CCD provides standardized school data for all 50 states.
-#'
-#' @param end_year School year end
-#' @return List with lea and school data frames
-#' @keywords internal
-download_nces_ccd <- function(end_year) {
-
-  message("  Downloading from NCES CCD...")
-
-  # NCES CCD file naming convention
-  # Membership files: sc{yy}2a.zip where yy = 2-digit year
-  # Directory files: sc{yy}1a.zip
-
-  # Calculate school year identifiers
-  # For 2023-24 school year (end_year = 2024), use "232" prefix
-  year_prefix <- sprintf("%02d%01d", (end_year - 1) %% 100, 2)
-
-  # Download LEA membership data
-  message("    Downloading LEA membership data...")
-  lea_data <- download_ccd_file(end_year, "lea")
-
-  # Download school membership data
-  message("    Downloading school membership data...")
-  school_data <- download_ccd_file(end_year, "school")
-
-  list(
-    lea = lea_data,
-    school = school_data
-  )
-}
-
-
-#' Download a CCD data file
-#'
-#' @param end_year School year end
-#' @param level "lea" or "school"
-#' @return Data frame filtered to North Carolina
-#' @keywords internal
-download_ccd_file <- function(end_year, level) {
-
-  # CCD uses school year format like "2023-24" -> prefix "232"
-  # The file naming has changed over the years
-
-  # Build URL based on level and year
-  # Recent years use this pattern:
-  # LEA: https://nces.ed.gov/ccd/data/zip/ccd_lea_052_2223_w_1a_071923.zip
-  # School: https://nces.ed.gov/ccd/data/zip/ccd_sch_052_2223_w_1a_071923.zip
-
-  # School year string (e.g., "2223" for 2022-23)
-  sy_short <- paste0(
-    sprintf("%02d", (end_year - 1) %% 100),
-    sprintf("%02d", end_year %% 100)
-  )
-
-  # Try multiple URL patterns since NCES changes them
-  url_patterns <- list(
-    # Pattern for recent years with membership data (survey 052)
-    membership_recent = paste0(
-      "https://nces.ed.gov/ccd/data/zip/ccd_",
-      ifelse(level == "lea", "lea", "sch"),
-      "_052_", sy_short, "_w_1a.zip"
-    ),
-    # Alternative pattern with date suffix
-    membership_dated = paste0(
-      "https://nces.ed.gov/ccd/data/zip/ccd_",
-      ifelse(level == "lea", "lea", "sch"),
-      "_052_", sy_short, "_*.zip"
-    ),
-    # Older flat file pattern
-    legacy = paste0(
-      "https://nces.ed.gov/ccd/data/",
-      ifelse(level == "lea", "ag", "sc"),
-      sy_short, ".zip"
-    )
-  )
-
-  # Create temp directory for extraction
-  temp_dir <- tempdir()
-  temp_zip <- tempfile(fileext = ".zip")
-
-  df <- NULL
-
-  # Try each URL pattern
-  for (pattern_name in names(url_patterns)) {
-    url <- url_patterns[[pattern_name]]
-
-    # Skip wildcard URLs (would need to scrape directory)
-    if (grepl("\\*", url)) next
-
-    tryCatch({
-      response <- httr::GET(
-        url,
-        httr::write_disk(temp_zip, overwrite = TRUE),
-        httr::timeout(300),
-        httr::user_agent("ncschooldata R package")
-      )
-
-      if (!httr::http_error(response)) {
-        # Extract and read the CSV file
-        files <- utils::unzip(temp_zip, exdir = temp_dir)
-
-        # Find the data file (usually .csv or .dat)
-        data_file <- files[grepl("\\.(csv|dat|txt)$", files, ignore.case = TRUE)]
-
-        if (length(data_file) > 0) {
-          # Read the first matching file
-          df <- readr::read_csv(
-            data_file[1],
-            col_types = readr::cols(.default = readr::col_character()),
-            show_col_types = FALSE
-          )
-
-          # Filter to North Carolina (FIPS code 37)
-          nc_filter_cols <- c("FIPST", "ST", "STATE", "STATECODE", "state")
-          for (col in nc_filter_cols) {
-            if (col %in% names(df)) {
-              df <- df[df[[col]] %in% c("37", "NC"), ]
-              break
-            }
-          }
-
-          # Clean up
-          unlink(temp_zip)
-          unlink(files)
-          break
-        }
-      }
-    }, error = function(e) {
-      # Try next pattern
-    })
-  }
-
-  # Clean up temp file
-  if (file.exists(temp_zip)) unlink(temp_zip)
-
-  if (is.null(df) || nrow(df) == 0) {
-    # If CCD fails, try building synthetic data from known structure
-    message("    CCD download failed, using fallback data structure...")
-    df <- create_empty_enrollment_df(level)
-  }
-
-  df
 }
 
 

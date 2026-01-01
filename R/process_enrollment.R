@@ -14,7 +14,7 @@
 
 #' Process raw NC enrollment data
 #'
-#' Transforms raw data from NC DPI or NCES into a standardized schema
+#' Transforms raw data from NC DPI into a standardized schema
 #' combining LEA and school data.
 #'
 #' @param raw_data List containing lea and school data frames from get_raw_enr
@@ -71,12 +71,11 @@ process_lea_enr <- function(df, end_year) {
   )
 
   # District/LEA ID - NC uses 3-digit LEA codes
-  # NCES uses LEAID which includes state FIPS prefix (37XXX)
   lea_col <- find_col(c("LEAID", "LEA_CODE", "LEA", "LEACODE", "lea_code",
                         "DIST_ID", "DISTRICT_ID"))
   if (!is.null(lea_col)) {
     lea_id <- trimws(as.character(df[[lea_col]]))
-    # If NCES format (5+ digits with state FIPS), extract last 3
+    # If 5+ digits with state FIPS prefix, extract last 3
     lea_id <- ifelse(nchar(lea_id) >= 5,
                      substr(lea_id, nchar(lea_id) - 2, nchar(lea_id)),
                      lea_id)
@@ -119,8 +118,8 @@ process_lea_enr <- function(df, end_year) {
   }
 
   # Demographics by race/ethnicity
-  # NCES CCD codes: AM=American Indian, AS=Asian, HI=Hispanic, BL=Black,
-  #                 WH=White, HP=Hawaiian/Pacific Islander, TR=Two or More
+  # Codes: AM=American Indian, AS=Asian, HI=Hispanic, BL=Black,
+  #        WH=White, HP=Hawaiian/Pacific Islander, TR=Two or More
   demo_map <- list(
     white = c("WH", "WHITE", "MEMBER_WH", "WHI"),
     black = c("BL", "BLACK", "MEMBER_BL", "BLA"),
@@ -225,12 +224,12 @@ process_school_enr <- function(df, end_year) {
     stringsAsFactors = FALSE
   )
 
-  # School ID - NCES uses NCESSCH (12 digits), NC uses 6 digits
-  school_col <- find_col(c("NCESSCH", "SCHOOL_ID", "SCHCODE", "SCH_ID",
-                           "SCHID", "SCHOOL_CODE"))
+  # School ID - NC uses 6 digits
+  school_col <- find_col(c("SCHOOL_ID", "SCHCODE", "SCH_ID",
+                           "SCHID", "SCHOOL_CODE", "NCESSCH"))
   if (!is.null(school_col)) {
     sch_id <- trimws(as.character(df[[school_col]]))
-    # If NCES format (12 digits), extract last 6
+    # If 12+ digits, extract last 6
     sch_id <- ifelse(nchar(sch_id) >= 12,
                      substr(sch_id, nchar(sch_id) - 5, nchar(sch_id)),
                      sch_id)

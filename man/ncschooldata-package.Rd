@@ -45,7 +45,6 @@ North Carolina uses a hierarchical ID system:
 Data is sourced from:
 \itemize{
 \item NC DPI Statistical Profile: \url{http://apps.schools.nc.gov/ords/f?p=145:1}
-\item NCES Common Core of Data: \url{https://nces.ed.gov/ccd/}
 }
 }
 

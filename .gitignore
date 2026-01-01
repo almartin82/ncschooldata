@@ -7,6 +7,7 @@
 # Package build artifacts
 *.tar.gz
 *.Rcheck/
+..Rcheck/
 
 # Documentation build
 docs/
