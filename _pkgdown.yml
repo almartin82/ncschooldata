@@ -47,7 +47,7 @@ articles:
   - title: Getting Started
     navbar: ~
     contents:
-      - ncschooldata
+      - enrollment_hooks
 
 home:
   sidebar:
