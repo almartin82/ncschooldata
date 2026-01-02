@@ -10,8 +10,6 @@
 
 # Documentation build
 docs/
-doc/
-Meta/
 
 # OS files
 .DS_Store
