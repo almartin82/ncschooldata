@@ -1,7 +1,6 @@
 # Get available years
 
-Returns the range of years for which enrollment data is available from
-the North Carolina Department of Public Instruction (NC DPI).
+Returns the range of years for which enrollment data is available.
 
 ## Usage
 
@@ -11,26 +10,19 @@ get_available_years()
 
 ## Value
 
-A list with:
-
-- min_year:
-
-  First available year (2006)
-
-- max_year:
-
-  Last available year (2025)
-
-- description:
-
-  Description of data availability
+Character vector of available years
 
 ## Examples
 
 ``` r
-years <- get_available_years()
-print(years$min_year)
+get_available_years()
+#> $min_year
 #> [1] 2006
-print(years$max_year)
+#> 
+#> $max_year
 #> [1] 2025
+#> 
+#> $description
+#> [1] "North Carolina enrollment data from NC DPI Statistical Profile. Available years: 2006-2025."
+#> 
 ```

@@ -78,8 +78,6 @@ Data is sourced from:
 
 Useful links:
 
-- <https://almartin82.github.io/ncschooldata>
-
 - <https://github.com/almartin82/ncschooldata>
 
 - Report bugs at <https://github.com/almartin82/ncschooldata/issues>
