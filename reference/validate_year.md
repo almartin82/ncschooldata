@@ -20,7 +20,7 @@ validate_year(end_year, min_year = 2006, max_year = 2025)
 
 - max_year:
 
-  Maximum valid year
+  Maximum valid year (currently 2025)
 
 ## Value
 
