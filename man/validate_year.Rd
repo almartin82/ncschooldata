@@ -11,7 +11,7 @@ validate_year(end_year, min_year = 2006, max_year = 2025)
 
 \item{min_year}{Minimum valid year}
 
-\item{max_year}{Maximum valid year}
+\item{max_year}{Maximum valid year (currently 2025)}
 }
 \value{
 TRUE if valid, otherwise throws error
