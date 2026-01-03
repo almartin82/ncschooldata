@@ -1,8 +1,7 @@
 # Fetch North Carolina enrollment data
 
 Downloads and processes enrollment data from the North Carolina
-Department of Public Instruction Statistical Profile or NCES Common Core
-of Data.
+Department of Public Instruction Statistical Profile.
 
 ## Usage
 
@@ -48,7 +47,7 @@ enr_wide <- fetch_enr(2024, tidy = FALSE)
 enr_fresh <- fetch_enr(2024, use_cache = FALSE)
 
 # Filter to Wake County Schools
-wake <- enr_2024 %>%
+wake <- enr_2024 |>
   dplyr::filter(district_id == "920")
 } # }
 ```
