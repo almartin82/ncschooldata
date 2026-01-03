@@ -50,10 +50,10 @@ clean_name <- function(x) {
 #'
 #' @param end_year School year end
 #' @param min_year Minimum valid year
-#' @param max_year Maximum valid year
+#' @param max_year Maximum valid year (currently 2024)
 #' @return TRUE if valid, otherwise throws error
 #' @keywords internal
-validate_year <- function(end_year, min_year = 2006, max_year = 2025) {
+validate_year <- function(end_year, min_year = 2006, max_year = 2024) {
   if (!is.numeric(end_year) || length(end_year) != 1)
     stop("end_year must be a single numeric value")
 
