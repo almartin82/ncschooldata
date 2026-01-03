@@ -7,11 +7,17 @@
 get_available_years()
 }
 \value{
-Character vector of available years
+A list with:
+\item{min_year}{First available year (2006)}
+\item{max_year}{Last available year (2025)}
+\item{description}{Description of data availability}
 }
 \description{
-Returns the range of years for which enrollment data is available.
+Returns the range of years for which enrollment data is available
+from the North Carolina Department of Public Instruction (NC DPI).
 }
 \examples{
-get_available_years()
+years <- get_available_years()
+print(years$min_year)
+print(years$max_year)
 }
