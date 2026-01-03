@@ -68,6 +68,7 @@ Data is sourced from:
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://almartin82.github.io/ncschooldata}
   \item \url{https://github.com/almartin82/ncschooldata}
   \item Report bugs at \url{https://github.com/almartin82/ncschooldata/issues}
 }
