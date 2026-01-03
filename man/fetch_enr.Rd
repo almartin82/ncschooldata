@@ -23,7 +23,7 @@ Tidy format pivots these counts into subgroup and grade_level columns.
 }
 \description{
 Downloads and processes enrollment data from the North Carolina Department
-of Public Instruction Statistical Profile or NCES Common Core of Data.
+of Public Instruction Statistical Profile.
 }
 \examples{
 \dontrun{
@@ -37,7 +37,7 @@ enr_wide <- fetch_enr(2024, tidy = FALSE)
 enr_fresh <- fetch_enr(2024, use_cache = FALSE)
 
 # Filter to Wake County Schools
-wake <- enr_2024 \%>\%
+wake <- enr_2024 |>
   dplyr::filter(district_id == "920")
 }
 }
