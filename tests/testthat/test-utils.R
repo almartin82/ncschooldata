@@ -28,14 +28,14 @@ test_that("clean_name handles various inputs", {
 
 
 test_that("validate_year catches invalid years", {
-  expect_error(validate_year(2000, 2006, 2025), "not available")
-  expect_error(validate_year(2030, 2006, 2025), "not available")
-  expect_error(validate_year("2020", 2006, 2025), "must be a single numeric")
-  expect_error(validate_year(c(2020, 2021), 2006, 2025), "must be a single numeric")
+  expect_error(validate_year(2000, 2006, 2024), "not available")
+  expect_error(validate_year(2030, 2006, 2024), "not available")
+  expect_error(validate_year("2020", 2006, 2024), "must be a single numeric")
+  expect_error(validate_year(c(2020, 2021), 2006, 2024), "must be a single numeric")
 
   # Valid years should not error
 
-  expect_true(validate_year(2020, 2006, 2025))
-  expect_true(validate_year(2006, 2006, 2025))
-  expect_true(validate_year(2025, 2006, 2025))
+  expect_true(validate_year(2020, 2006, 2024))
+  expect_true(validate_year(2006, 2006, 2024))
+  expect_true(validate_year(2024, 2006, 2024))
 })
