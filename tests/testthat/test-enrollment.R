@@ -3,10 +3,12 @@
 
 test_that("get_available_years returns valid range", {
   years <- get_available_years()
-  expect_true(is.numeric(years))
-  expect_true(2006 %in% years)
-  expect_true(2024 %in% years)
-  expect_true(length(years) >= 19)  # At least 2006-2024
+  # Returns list with min_year and max_year
+  expect_true(is.list(years))
+  expect_true("min_year" %in% names(years))
+  expect_true("max_year" %in% names(years))
+  expect_equal(years$min_year, 2006)
+  expect_true(years$max_year >= 2024)
 })
 
 
