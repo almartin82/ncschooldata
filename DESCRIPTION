@@ -13,11 +13,12 @@ Depends:
     R (>= 4.1.0)
 Imports:
     dplyr,
-    readr,
     purrr,
+    readr,
+    readxl,
+    rlang,
     stringr,
     tidyr,
-    rlang,
     httr,
     rappdirs,
     stats,
