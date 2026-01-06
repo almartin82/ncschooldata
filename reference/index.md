@@ -8,6 +8,10 @@ Functions for downloading enrollment data
   : Fetch North Carolina enrollment data
 - [`fetch_enr_multi()`](https://almartin82.github.io/ncschooldata/reference/fetch_enr_multi.md)
   : Fetch enrollment data for multiple years
+- [`fetch_directory()`](https://almartin82.github.io/ncschooldata/reference/fetch_directory.md)
+  : Fetch North Carolina school directory
+- [`fetch_directory_multi()`](https://almartin82.github.io/ncschooldata/reference/fetch_directory_multi.md)
+  : Fetch multiple directory types
 - [`get_available_years()`](https://almartin82.github.io/ncschooldata/reference/get_available_years.md)
   : Get available years
 
