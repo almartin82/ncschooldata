@@ -2,8 +2,6 @@
 # Directory Data Tests
 # ==============================================================================
 
-context("Directory data fetching")
-
 # Helper function to check network connectivity
 skip_if_offline <- function() {
   tryCatch({
