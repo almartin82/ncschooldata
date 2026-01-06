@@ -3,6 +3,8 @@
 export(cache_status)
 export(clear_cache)
 export(enr_grade_aggs)
+export(fetch_directory)
+export(fetch_directory_multi)
 export(fetch_enr)
 export(fetch_enr_multi)
 export(get_available_years)
