@@ -29,6 +29,7 @@ reference:
       - fetch_enr
       - fetch_enr_multi
       - fetch_directory
+      - fetch_directory_multi
       - get_available_years
 
   - title: Transform Data

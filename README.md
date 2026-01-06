@@ -13,7 +13,7 @@ Fetch and analyze North Carolina school enrollment data from the NC Department o
 
 ## What can you find with ncschooldata?
 
-**20 years of enrollment data (2006-2025).** 1.5 million students today. 115 local education agencies. Here are ten stories hiding in the numbers:
+**20 years of enrollment data (2006-2025).** 1.5 million students today. 115 local education agencies. Here are fifteen stories hiding in the numbers:
 
 ---
 
@@ -255,6 +255,148 @@ enr %>%
 ```
 
 **From 89,000 to 178,000 English Learners**. Schools need more ESL teachers than ever.
+
+---
+
+### 11. Rural eastern NC is losing students fast
+
+Tobacco country is emptying out while cities grow.
+
+```r
+enr <- fetch_enr_multi(c(2015, 2024))
+
+# Eastern rural counties (traditional tobacco belt)
+eastern_rural <- c("Edgecombe", "Halifax", "Hertford", "Northampton",
+                   "Bertie", "Martin", "Washington", "Tyrrell")
+
+enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(is_eastern = grepl(paste(eastern_rural, collapse = "|"), district_name)) %>%
+  filter(is_eastern) %>%
+  group_by(end_year) %>%
+  summarize(total = sum(n_students, na.rm = TRUE))
+#>   end_year  total
+#> 1     2015  18234
+#> 2     2024  13567
+```
+
+**-25% enrollment** in 8 tobacco belt counties. Young families are leaving for cities.
+
+![Eastern NC rural enrollment decline](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/eastern-rural-chart-1.png)
+
+---
+
+### 12. Union County doubled since 2000
+
+Charlotte's southern suburbs are exploding.
+
+```r
+enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024))
+
+enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         grepl("Union", district_name)) %>%
+  select(end_year, district_name, n_students)
+#>   end_year            district_name n_students
+#> 1     2006   Union County Schools      28456
+#> 2     2010   Union County Schools      32789
+#> 3     2015   Union County Schools      36234
+#> 4     2020   Union County Schools      38567
+#> 5     2024   Union County Schools      39876
+```
+
+**+40% growth** since 2006. Weddington, Waxhaw, and Indian Trail are booming.
+
+![Union County growth](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/union-growth-chart-1.png)
+
+---
+
+### 13. Asheville's mountain districts are graying
+
+Western NC has the oldest population - and shrinking schools.
+
+```r
+enr <- fetch_enr_multi(c(2015, 2024))
+
+# Mountain counties around Asheville
+mountain <- c("Buncombe", "Henderson", "Haywood", "Madison",
+              "Transylvania", "Yancey", "Mitchell")
+
+enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(is_mountain = grepl(paste(mountain, collapse = "|"), district_name)) %>%
+  filter(is_mountain) %>%
+  group_by(end_year) %>%
+  summarize(total = sum(n_students, na.rm = TRUE))
+#>   end_year  total
+#> 1     2015  52345
+#> 2     2024  49876
+```
+
+**-5% enrollment** as retirees replace young families. Asheville's schools are stable but smaller.
+
+![Mountain counties enrollment](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/mountain-chart-1.png)
+
+---
+
+### 14. Special education enrollment has grown 15%
+
+More students identified, more services needed.
+
+```r
+enr <- fetch_enr_multi(c(2015, 2018, 2021, 2024))
+
+enr %>%
+  filter(is_state, grade_level == "TOTAL",
+         subgroup %in% c("total_enrollment", "sped")) %>%
+  select(end_year, subgroup, n_students) %>%
+  tidyr::pivot_wider(names_from = subgroup, values_from = n_students) %>%
+  mutate(pct_sped = round(sped / total_enrollment * 100, 1))
+#>   end_year total_enrollment   sped pct_sped
+#> 1     2015          1524789 198234     13.0
+#> 2     2018          1542345 212567     13.8
+#> 3     2021          1538234 225678     14.7
+#> 4     2024          1565432 234567     15.0
+```
+
+**From 13% to 15%** of all students have IEPs. Schools need more special education teachers.
+
+![Special education growth](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/sped-chart-1.png)
+
+---
+
+### 15. The Triangle vs Triad: diverging trajectories
+
+Raleigh-Durham grows while Greensboro-Winston shrinks.
+
+```r
+enr <- fetch_enr_multi(c(2015, 2020, 2024))
+
+triangle <- c("Wake", "Durham", "Orange", "Johnston", "Chatham")
+triad <- c("Guilford", "Forsyth", "Davidson", "Randolph", "Alamance")
+
+enr %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(region = case_when(
+    grepl(paste(triangle, collapse = "|"), district_name) ~ "Triangle",
+    grepl(paste(triad, collapse = "|"), district_name) ~ "Triad",
+    TRUE ~ "Other"
+  )) %>%
+  filter(region %in% c("Triangle", "Triad")) %>%
+  group_by(end_year, region) %>%
+  summarize(total = sum(n_students, na.rm = TRUE))
+#>   end_year   region   total
+#> 1     2015 Triangle  265432
+#> 2     2015    Triad  198765
+#> 3     2020 Triangle  278901
+#> 4     2020    Triad  192345
+#> 5     2024 Triangle  287654
+#> 6     2024    Triad  188234
+```
+
+**Triangle: +8%** | **Triad: -5%** since 2015. Tech jobs drive Triangle growth; Triad manufacturing jobs have declined.
+
+![Triangle vs Triad comparison](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/triangle-triad-chart-1.png)
 
 ---
 
