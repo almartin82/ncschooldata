@@ -85,7 +85,7 @@ process_directory <- function(raw_data) {
     }
 
     # Convert to tibble
-    tibble::as_tibble(result)
+    dplyr::as_tibble(result)
   })
 
   # Combine all directory types
