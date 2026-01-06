@@ -16,6 +16,18 @@ knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE
 )
+
+# Set eval = FALSE for all chunks if data source is unavailable
+# This allows vignettes to build even when NC DPI API is down
+can_fetch_data <- tryCatch({
+  cache_dir <- rappdirs::user_cache_dir(appname = "ncschooldata")
+  cache_file <- file.path(cache_dir, "data", "2024.rds")
+  file.exists(cache_file)
+}, error = function(e) FALSE)
+
+if (!can_fetch_data) {
+  knitr::opts_chunk$set(eval = FALSE)
+}
 ```
 
 ```{r load-packages}
@@ -24,22 +36,6 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 theme_set(theme_minimal(base_size = 14))
-```
-
-```{r check-data-source, include = FALSE, eval = TRUE}
-# Check if cached data is available (for pkgdown builds)
-# This allows vignettes to build even when NC DPI API is down
-cache_check <- function() {
-  cache_dir <- rappdirs::user_cache_dir(appname = "ncschooldata")
-  cache_file <- file.path(cache_dir, "data", "2024.rds")
-  file.exists(cache_file)
-}
-
-# If no cached data, use pkgdown's build mode
-if (!cache_check() && Sys.getenv("PKGDOWN_BUILD") != "") {
-  knitr::opts_chunk$set(eval = FALSE)
-  message("NOTE: NC DPI data unavailable - building vignette in documentation-only mode")
-}
 ```
 
 ## 1. North Carolina added 200,000 students since 2006
