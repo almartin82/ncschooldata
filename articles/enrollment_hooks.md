@@ -13,7 +13,7 @@ theme_set(theme_minimal(base_size = 14))
 One of America’s fastest-growing school systems.
 
 ``` r
-enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024, use_cache = TRUE))
+enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
 
 statewide <- enr %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
@@ -115,7 +115,7 @@ ggplot(demographics, aes(x = end_year, y = n_students / 1000, color = subgroup))
 Brunswick and New Hanover counties are growing; Greensboro is shrinking.
 
 ``` r
-enr_regional <- fetch_enr_multi(c(2015, 2024, use_cache = TRUE))
+enr_regional <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
 
 coastal <- c("New Hanover", "Brunswick", "Pender")
 piedmont <- c("Guilford", "Forsyth", "Alamance")
@@ -201,7 +201,7 @@ ggplot(grade_trends, aes(x = end_year, y = n_students / 1000, color = grade_leve
 NC schools are adapting to a multilingual reality.
 
 ``` r
-enr_el <- fetch_enr_multi(c(2014, 2019, 2024, use_cache = TRUE))
+enr_el <- fetch_enr_multi(c(2014, 2019, 2024), use_cache = TRUE)
 
 el_trend <- enr_el %>%
   filter(is_state, grade_level == "TOTAL", subgroup == "lep") %>%
@@ -234,7 +234,7 @@ ggplot(el_trend, aes(x = end_year, y = n_students / 1000)) +
 Tobacco country is emptying out while cities grow.
 
 ``` r
-enr_multi <- fetch_enr_multi(c(2015, 2024, use_cache = TRUE))
+enr_multi <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
 
 # Eastern rural counties (traditional tobacco belt)
 eastern_rural <- c("Edgecombe", "Halifax", "Hertford", "Northampton",
@@ -272,7 +272,7 @@ ggplot(eastern_data, aes(x = factor(end_year), y = total / 1000)) +
 Charlotte’s southern suburbs are exploding.
 
 ``` r
-enr_union <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024, use_cache = TRUE))
+enr_union <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
 
 union_trend <- enr_union %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
@@ -305,7 +305,7 @@ ggplot(union_trend, aes(x = end_year, y = n_students / 1000)) +
 Western NC has the oldest population - and shrinking schools.
 
 ``` r
-enr_mountain <- fetch_enr_multi(c(2015, 2024, use_cache = TRUE))
+enr_mountain <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
 
 # Mountain counties around Asheville
 mountain <- c("Buncombe", "Henderson", "Haywood", "Madison",
@@ -346,7 +346,7 @@ ggplot(mountain_data, aes(x = factor(end_year), y = total / 1000)) +
 More students identified, more services needed.
 
 ``` r
-enr_sped <- fetch_enr_multi(c(2015, 2018, 2021, 2024, use_cache = TRUE))
+enr_sped <- fetch_enr_multi(c(2015, 2018, 2021, 2024), use_cache = TRUE)
 
 sped_trend <- enr_sped %>%
   filter(is_state, grade_level == "TOTAL",
@@ -383,7 +383,7 @@ ggplot(sped_trend, aes(x = end_year)) +
 Raleigh-Durham grows while Greensboro-Winston shrinks.
 
 ``` r
-enr_metro <- fetch_enr_multi(c(2015, 2020, 2024, use_cache = TRUE))
+enr_metro <- fetch_enr_multi(c(2015, 2020, 2024), use_cache = TRUE)
 
 triangle <- c("Wake", "Durham", "Orange", "Johnston", "Chatham")
 triad <- c("Guilford", "Forsyth", "Davidson", "Randolph", "Alamance")
