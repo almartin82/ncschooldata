@@ -470,3 +470,7 @@ enr %>%
 ```
 
 See the [quickstart guide](quickstart.html) for more examples.
+
+```{r session-info}
+sessionInfo()
+```

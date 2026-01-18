@@ -54,6 +54,12 @@ articles:
     navbar: ~
     contents:
       - enrollment_hooks
+  - title: internal
+    contents:
+      - CLAUDE
+      - EXPANSION
+      - TODO
+      - PRD
 
 home:
   sidebar:

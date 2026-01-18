@@ -10,5 +10,9 @@
 ^doc$
 ^Meta$
 ^CLAUDE\.md$
+^EXPANSION\.md$
+^TODO\.md$
+^PRD\.md$
+^generate_readme_figs\.R$
 ^py.*schooldata$
 ^vignettes/.*_cache$
