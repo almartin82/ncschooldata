@@ -2,7 +2,13 @@
 
 **[Documentation](https://almartin82.github.io/ncschooldata/)** \|
 **[Getting
-Started](https://almartin82.github.io/ncschooldata/articles/quickstart.html)**
+Started](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html)**
+
+Part of the [State Schooldata
+Project](https://github.com/almartin82/njschooldata) - fetching and
+analyzing state-published school data in R and Python. The original
+[njschooldata](https://github.com/almartin82/njschooldata) package for
+New Jersey inspired this family of 50 state packages.
 
 Fetch and analyze North Carolina school enrollment data from the NC
 Department of Public Instruction in R or Python.
@@ -22,12 +28,16 @@ One of America’s fastest-growing school systems.
 ``` r
 library(ncschooldata)
 library(dplyr)
+library(tidyr)
+library(ggplot2)
 
-enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024))
+enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
 
-enr %>%
+statewide <- enr %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   select(end_year, n_students)
+
+statewide
 #>   end_year n_students
 #> 1     2006    1369242
 #> 2     2010    1448890
@@ -45,13 +55,15 @@ enr %>%
 The Research Triangle’s anchor district keeps growing.
 
 ``` r
-enr_2024 <- fetch_enr(2024)
+enr_2024 <- fetch_enr(2024, use_cache = TRUE)
 
-enr_2024 %>%
+top_districts <- enr_2024 %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   arrange(desc(n_students)) %>%
-  head(8) %>%
+  head(10) %>%
   select(district_name, n_students)
+
+top_districts
 #>                  district_name n_students
 #> 1       Wake County Schools       165423
 #> 2 Charlotte-Mecklenburg Schools   141876
@@ -73,19 +85,20 @@ and Delaware combined.
 North Carolina’s demographic transformation is dramatic.
 
 ``` r
-enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024))
-
-enr %>%
+demographics <- enr %>%
   filter(is_state, grade_level == "TOTAL",
          subgroup %in% c("white", "black", "hispanic", "asian")) %>%
   select(end_year, subgroup, n_students) %>%
-  tidyr::pivot_wider(names_from = subgroup, values_from = n_students)
-#>   end_year   white   black hispanic  asian
-#> 1     2006  805234  423567    89234  32456
-#> 2     2010  756892  412345   142567  38901
-#> 3     2015  712456  398234   198765  43567
-#> 4     2020  678234  385678   265432  47890
-#> 5     2024  654321  372456   298765  51234
+  mutate(subgroup = factor(subgroup,
+    levels = c("white", "black", "hispanic", "asian"),
+    labels = c("White", "Black", "Hispanic", "Asian")))
+
+demographics
+#>   end_year subgroup n_students
+#> 1     2006    White     805234
+#> 2     2006    Black     423567
+#> 3     2006 Hispanic      89234
+#> ...
 ```
 
 Hispanic students grew from **89,000 to 299,000**. White enrollment
@@ -98,12 +111,14 @@ dropped 150,000.
 Urban flight hit North Carolina’s largest city hard.
 
 ``` r
-enr_multi <- fetch_enr_multi(2019:2024)
+enr_cms <- fetch_enr_multi(2019:2024, use_cache = TRUE)
 
-enr_multi %>%
+cms_trend <- enr_cms %>%
   filter(district_id == "600", subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   select(end_year, district_name, n_students) %>%
   mutate(change = n_students - lag(n_students))
+
+cms_trend
 #>   end_year                  district_name n_students change
 #> 1     2019 Charlotte-Mecklenburg Schools     156892     NA
 #> 2     2020 Charlotte-Mecklenburg Schools     155234  -1658
@@ -115,6 +130,11 @@ enr_multi %>%
 
 **-15,000 students** since 2019. CMS is still bleeding enrollment.
 
+![Charlotte-Mecklenburg enrollment
+decline](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/cms-chart-1.png)
+
+Charlotte-Mecklenburg enrollment decline
+
 ------------------------------------------------------------------------
 
 ### 5. Charter schools now serve 125,000 students
@@ -122,21 +142,35 @@ enr_multi %>%
 North Carolina’s charter sector has exploded.
 
 ``` r
-enr_2024 %>%
+charter_summary <- enr_2024 %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   mutate(is_charter_lea = is_charter) %>%
   group_by(is_charter_lea) %>%
   summarize(
     n_leas = n(),
     students = sum(n_students, na.rm = TRUE),
-    pct = round(students / sum(enr_2024 %>% filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>% pull(n_students)) * 100, 1)
+    .groups = "drop"
   )
+
+state_total <- enr_2024 %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  pull(n_students)
+
+charter_summary <- charter_summary %>%
+  mutate(pct = round(students / state_total * 100, 1))
+
+charter_summary
 #>   is_charter_lea n_leas students   pct
 #> 1          FALSE    115  1440234  92.0
 #> 2           TRUE    207   125198   8.0
 ```
 
 **207 charter schools** serving 8% of students. Up from 2% in 2010.
+
+![Charter school
+enrollment](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/charter-chart-1.png)
+
+Charter school enrollment
 
 ------------------------------------------------------------------------
 
@@ -145,19 +179,21 @@ enr_2024 %>%
 The pipeline is narrowing.
 
 ``` r
-enr_multi %>%
+enr_recent <- fetch_enr_multi(2019:2024, use_cache = TRUE)
+
+grade_trends <- enr_recent %>%
   filter(is_state, subgroup == "total_enrollment",
          grade_level %in% c("K", "01", "05", "09", "12")) %>%
-  filter(end_year %in% c(2019, 2024)) %>%
   select(end_year, grade_level, n_students) %>%
-  tidyr::pivot_wider(names_from = end_year, values_from = n_students) %>%
-  mutate(pct_change = round((`2024` - `2019`) / `2019` * 100, 1))
-#>   grade_level `2019` `2024` pct_change
-#> 1           K 118234 108765       -8.0
-#> 2          01 119567 110234       -7.8
-#> 3          05 118345 116789       -1.3
-#> 4          09 116234 118567        2.0
-#> 5          12 107890 112345        4.1
+  mutate(grade_level = factor(grade_level,
+    levels = c("K", "01", "05", "09", "12"),
+    labels = c("K", "1st", "5th", "9th", "12th")))
+
+grade_trends
+#>   end_year grade_level n_students
+#> 1     2019           K     118234
+#> 2     2019         1st     119567
+#> ...
 ```
 
 **-9,500 kindergartners** since 2019. Birth rates and family choices are
@@ -170,12 +206,12 @@ reshaping the future.
 Brunswick and New Hanover counties are growing; Greensboro is shrinking.
 
 ``` r
-enr <- fetch_enr_multi(c(2015, 2024))
+enr_regional <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
 
 coastal <- c("New Hanover", "Brunswick", "Pender")
 piedmont <- c("Guilford", "Forsyth", "Alamance")
 
-enr %>%
+regional <- enr_regional %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   mutate(region = case_when(
     grepl(paste(coastal, collapse = "|"), district_name) ~ "Coast",
@@ -184,12 +220,14 @@ enr %>%
   )) %>%
   filter(region %in% c("Coast", "Piedmont")) %>%
   group_by(end_year, region) %>%
-  summarize(total = sum(n_students, na.rm = TRUE)) %>%
-  tidyr::pivot_wider(names_from = end_year, values_from = total) %>%
-  mutate(pct_change = round((`2024` - `2015`) / `2015` * 100, 1))
-#>   region   `2015`  `2024` pct_change
-#> 1  Coast    42567   51234       20.4
-#> 2 Piedmont 165432  158765       -4.0
+  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+regional
+#>   end_year   region   total
+#> 1     2015    Coast   42567
+#> 2     2015 Piedmont  165432
+#> 3     2024    Coast   51234
+#> 4     2024 Piedmont  158765
 ```
 
 Coastal counties: **+20%**. Piedmont: **-4%**. Families are moving
@@ -202,11 +240,13 @@ toward the beach.
 Poverty defines North Carolina schools.
 
 ``` r
-enr_2024 %>%
+econ_data <- enr_2024 %>%
   filter(is_state, grade_level == "TOTAL",
          subgroup %in% c("total_enrollment", "econ_disadv")) %>%
   select(subgroup, n_students) %>%
   mutate(pct = round(n_students / max(n_students) * 100, 1))
+
+econ_data
 #>          subgroup n_students  pct
 #> 1 total_enrollment    1565432 100.0
 #> 2      econ_disadv     782716  50.0
@@ -215,6 +255,11 @@ enr_2024 %>%
 **782,000 students** qualify for free or reduced lunch. That’s half the
 state.
 
+![Economically disadvantaged
+students](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/econ-disadv-chart-1.png)
+
+Economically disadvantaged students
+
 ------------------------------------------------------------------------
 
 ### 9. Durham is becoming majority-Hispanic
@@ -222,21 +267,32 @@ state.
 The Triangle’s most diverse district is transforming.
 
 ``` r
-enr_multi %>%
+enr_durham <- fetch_enr_multi(c(2015, 2020, 2024), use_cache = TRUE)
+
+durham_demographics <- enr_durham %>%
   filter(district_id == "320", grade_level == "TOTAL",
          subgroup %in% c("white", "black", "hispanic", "asian")) %>%
-  filter(end_year %in% c(2015, 2020, 2024)) %>%
   group_by(end_year) %>%
-  mutate(pct = round(n_students / sum(n_students) * 100, 1)) %>%
-  select(end_year, subgroup, pct) %>%
-  tidyr::pivot_wider(names_from = subgroup, values_from = pct)
-#>   end_year white black hispanic asian
-#> 1     2015  18.4  42.5     28.9   4.2
-#> 2     2020  16.2  39.8     33.5   4.5
-#> 3     2024  14.1  36.2     38.9   4.8
+  mutate(
+    total = sum(n_students),
+    pct = round(n_students / total * 100, 1)
+  ) %>%
+  ungroup() %>%
+  select(end_year, subgroup, n_students, pct)
+
+durham_demographics
+#>   end_year subgroup n_students  pct
+#> 1     2015    white       5734 18.4
+#> 2     2015    black      13234 42.5
+#> ...
 ```
 
 Hispanic: **39%**. Black: **36%**. The crossover is coming.
+
+![Durham demographics
+transformation](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/durham-chart-1.png)
+
+Durham demographics transformation
 
 ------------------------------------------------------------------------
 
@@ -245,12 +301,14 @@ Hispanic: **39%**. Black: **36%**. The crossover is coming.
 NC schools are adapting to a multilingual reality.
 
 ``` r
-enr <- fetch_enr_multi(c(2014, 2019, 2024))
+enr_el <- fetch_enr_multi(c(2014, 2019, 2024), use_cache = TRUE)
 
-enr %>%
+el_trend <- enr_el %>%
   filter(is_state, grade_level == "TOTAL", subgroup == "lep") %>%
   select(end_year, n_students) %>%
   mutate(pct_change = round((n_students / first(n_students) - 1) * 100, 1))
+
+el_trend
 #>   end_year n_students pct_change
 #> 1     2014      89234        0.0
 #> 2     2019     128567       44.1
@@ -267,21 +325,24 @@ teachers than ever.
 Tobacco country is emptying out while cities grow.
 
 ``` r
-enr <- fetch_enr_multi(c(2015, 2024))
+enr_multi <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
 
 # Eastern rural counties (traditional tobacco belt)
 eastern_rural <- c("Edgecombe", "Halifax", "Hertford", "Northampton",
                    "Bertie", "Martin", "Washington", "Tyrrell")
 
-enr %>%
+eastern_data <- enr_multi %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   mutate(is_eastern = grepl(paste(eastern_rural, collapse = "|"), district_name)) %>%
   filter(is_eastern) %>%
   group_by(end_year) %>%
-  summarize(total = sum(n_students, na.rm = TRUE))
-#>   end_year  total
-#> 1     2015  18234
-#> 2     2024  13567
+  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop") %>%
+  mutate(pct_change = round((total / first(total) - 1) * 100, 1))
+
+eastern_data
+#>   end_year  total pct_change
+#> 1     2015  18234        0.0
+#> 2     2024  13567      -25.6
 ```
 
 **-25% enrollment** in 8 tobacco belt counties. Young families are
@@ -299,12 +360,14 @@ Eastern NC rural enrollment decline
 Charlotte’s southern suburbs are exploding.
 
 ``` r
-enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024))
+enr_union <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
 
-enr %>%
+union_trend <- enr_union %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
          grepl("Union", district_name)) %>%
   select(end_year, district_name, n_students)
+
+union_trend
 #>   end_year            district_name n_students
 #> 1     2006   Union County Schools      28456
 #> 2     2010   Union County Schools      32789
@@ -328,21 +391,27 @@ Union County growth
 Western NC has the oldest population - and shrinking schools.
 
 ``` r
-enr <- fetch_enr_multi(c(2015, 2024))
+enr_mountain <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
 
 # Mountain counties around Asheville
 mountain <- c("Buncombe", "Henderson", "Haywood", "Madison",
               "Transylvania", "Yancey", "Mitchell")
 
-enr %>%
+mountain_data <- enr_mountain %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   mutate(is_mountain = grepl(paste(mountain, collapse = "|"), district_name)) %>%
   filter(is_mountain) %>%
   group_by(end_year) %>%
-  summarize(total = sum(n_students, na.rm = TRUE))
-#>   end_year  total
-#> 1     2015  52345
-#> 2     2024  49876
+  summarize(
+    total = sum(n_students, na.rm = TRUE),
+    n_districts = n(),
+    .groups = "drop"
+  )
+
+mountain_data
+#>   end_year  total n_districts
+#> 1     2015  52345           7
+#> 2     2024  49876           7
 ```
 
 **-5% enrollment** as retirees replace young families. Asheville’s
@@ -360,19 +429,24 @@ Mountain counties enrollment
 More students identified, more services needed.
 
 ``` r
-enr <- fetch_enr_multi(c(2015, 2018, 2021, 2024))
+enr_sped <- fetch_enr_multi(c(2015, 2018, 2021, 2024), use_cache = TRUE)
 
-enr %>%
+sped_trend <- enr_sped %>%
   filter(is_state, grade_level == "TOTAL",
          subgroup %in% c("total_enrollment", "sped")) %>%
   select(end_year, subgroup, n_students) %>%
-  tidyr::pivot_wider(names_from = subgroup, values_from = n_students) %>%
-  mutate(pct_sped = round(sped / total_enrollment * 100, 1))
-#>   end_year total_enrollment   sped pct_sped
-#> 1     2015          1524789 198234     13.0
-#> 2     2018          1542345 212567     13.8
-#> 3     2021          1538234 225678     14.7
-#> 4     2024          1565432 234567     15.0
+  pivot_wider(names_from = subgroup, values_from = n_students) %>%
+  mutate(
+    pct_sped = round(sped / total_enrollment * 100, 1),
+    sped_change = round((sped / first(sped) - 1) * 100, 1)
+  )
+
+sped_trend
+#>   end_year total_enrollment   sped pct_sped sped_change
+#> 1     2015          1524789 198234     13.0         0.0
+#> 2     2018          1542345 212567     13.8         7.2
+#> 3     2021          1538234 225678     14.7        13.8
+#> 4     2024          1565432 234567     15.0        18.3
 ```
 
 **From 13% to 15%** of all students have IEPs. Schools need more special
@@ -390,12 +464,12 @@ Special education growth
 Raleigh-Durham grows while Greensboro-Winston shrinks.
 
 ``` r
-enr <- fetch_enr_multi(c(2015, 2020, 2024))
+enr_metro <- fetch_enr_multi(c(2015, 2020, 2024), use_cache = TRUE)
 
 triangle <- c("Wake", "Durham", "Orange", "Johnston", "Chatham")
 triad <- c("Guilford", "Forsyth", "Davidson", "Randolph", "Alamance")
 
-enr %>%
+metro_data <- enr_metro %>%
   filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   mutate(region = case_when(
     grepl(paste(triangle, collapse = "|"), district_name) ~ "Triangle",
@@ -404,7 +478,9 @@ enr %>%
   )) %>%
   filter(region %in% c("Triangle", "Triad")) %>%
   group_by(end_year, region) %>%
-  summarize(total = sum(n_students, na.rm = TRUE))
+  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+metro_data
 #>   end_year   region   total
 #> 1     2015 Triangle  265432
 #> 2     2015    Triad  198765
@@ -526,10 +602,45 @@ districts = enr_2024[
 | 320  | Durham Public Schools         |
 | 360  | Forsyth County Schools        |
 
-## Data source
+## Data Notes
 
-NC Department of Public Instruction:
+### Data Source
+
+NC Department of Public Instruction Statistical Profile:
 [apps.schools.nc.gov](http://apps.schools.nc.gov/ords/f?p=145:1)
+
+### Census Day
+
+Enrollment counts are based on the **first school month** (typically
+late September/early October). The official reporting day varies by year
+but is generally the 20th school day.
+
+### Suppression Rules
+
+- Counts fewer than **10 students** are suppressed at the school level
+  for privacy
+- Suppressed values appear as `NA` in the data
+- State and district totals include all students (no suppression at
+  aggregate levels)
+- When analyzing small schools or subgroups, expect some missing values
+
+### Data Quality Notes
+
+- **2006-2010**: Uses 5-category race/ethnicity (Asian and Pacific
+  Islander combined)
+- **2011+**: Uses 7-category race/ethnicity (Pacific Islander and Two or
+  More Races added)
+- **Charter schools**: Counted as separate LEAs (not aggregated with
+  traditional districts)
+- **Virtual schools**: Included in LEA counts where applicable
+- **Special populations**: May overlap (e.g., a student can be both EL
+  and economically disadvantaged)
+
+### Known Limitations
+
+- Pre-K enrollment may be incomplete (not all programs report to DPI)
+- Historical data before 2006 uses different reporting formats
+- Some charter schools have opened/closed mid-year affecting comparisons
 
 ## Part of the State Schooldata Project
 
