@@ -441,3 +441,7 @@ enr %>%
 See the [quickstart
 guide](https://almartin82.github.io/ncschooldata/articles/quickstart.md)
 for more examples.
+
+``` r
+sessionInfo()
+```
