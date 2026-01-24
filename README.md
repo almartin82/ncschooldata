@@ -530,13 +530,62 @@ districts = enr_2024[
 ].sort_values('n_students', ascending=False)
 ```
 
+---
+
+## Assessment Data (NEW)
+
+The ncschooldata package now includes EOG (End-of-Grade) and EOC (End-of-Course) assessment results. See the [assessment vignette](https://almartin82.github.io/ncschooldata/articles/northcarolina-assessment.html) for 15 stories from the data.
+
+### R Assessment Example
+
+```r
+library(ncschooldata)
+library(dplyr)
+
+# Fetch 2024 assessment data
+assess <- fetch_assessment(2024, use_cache = TRUE)
+
+# State-level math results
+assess %>%
+  filter(is_district, subject == "MA", subgroup == "ALL", grade == "ALL") %>%
+  select(district_id, n_tested, pct_proficient) %>%
+  head(10)
+
+# Multi-year trends
+assess_multi <- fetch_assessment_multi(2019:2024, use_cache = TRUE)
+
+# District-specific data (Wake County = 920)
+wake_assess <- fetch_district_assessment(2024, "920")
+```
+
+### Key Assessment Functions
+
+| Function | Description |
+|----------|-------------|
+| `fetch_assessment(year)` | Get assessment data for one year |
+| `fetch_assessment_multi(years)` | Get assessment data for multiple years |
+| `fetch_district_assessment(year, district_id)` | Get data for a specific district |
+| `get_available_assessment_years()` | List available years (2014-2024, no 2020) |
+
+---
+
 ## Data availability
+
+### Enrollment Data
 
 | Years | Source | Notes |
 |-------|--------|-------|
 | **2006-2025** | NC DPI Statistical Profile | Full demographics, grade levels |
 | **2011+** | NC DPI | 7-category race/ethnicity (Pacific Islander, Two or More Races added) |
 | **2006-2010** | NC DPI | 5-category race/ethnicity (Asian/Pacific Islander combined) |
+
+### Assessment Data
+
+| Years | Source | Notes |
+|-------|--------|-------|
+| **2014-2024** | NC DPI School Report Cards | EOG (grades 3-8), EOC (high school) |
+| **2020** | Not available | COVID-19 testing waiver |
+| **Subjects** | Math, Reading, Science, Biology, NC Math 1, NC Math 3, English II |
 
 ### What's included
 
