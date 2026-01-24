@@ -23,7 +23,7 @@ navbar:
       aria-label: GitHub
 
 reference:
-  - title: Fetch Data
+  - title: Fetch Enrollment Data
     desc: Functions for downloading enrollment data
     contents:
       - fetch_enr
@@ -32,18 +32,32 @@ reference:
       - fetch_directory_multi
       - get_available_years
 
+  - title: Fetch Assessment Data
+    desc: Functions for downloading EOG and EOC assessment results
+    contents:
+      - fetch_assessment
+      - fetch_assessment_multi
+      - fetch_district_assessment
+      - fetch_school_assessment
+      - get_available_assessment_years
+
   - title: Transform Data
     desc: Functions for reshaping and processing data
     contents:
       - tidy_enr
       - id_enr_aggs
       - enr_grade_aggs
+      - tidy_assessment
+      - id_assessment_aggs
+      - filter_proficiency
+      - calc_proficiency_gap
 
   - title: Caching
     desc: Functions for managing cached data
     contents:
       - cache_status
       - clear_cache
+      - clear_assessment_cache
 
   - title: Package
     contents:
@@ -54,6 +68,7 @@ articles:
     navbar: ~
     contents:
       - enrollment_hooks
+      - northcarolina-assessment
 
 home:
   sidebar:
