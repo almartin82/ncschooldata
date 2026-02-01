@@ -588,7 +588,7 @@ sessionInfo()
 #>  [5] jquerylib_0.1.4    systemfonts_1.3.1  scales_1.4.0       textshaping_1.0.4 
 #>  [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    
 #> [13] generics_0.1.4     knitr_1.51         tibble_3.3.1       desc_1.4.3        
-#> [17] bslib_0.9.0        pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.1.7       
+#> [17] bslib_0.10.0       pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.1.7       
 #> [21] cachem_1.1.0       xfun_0.56          fs_1.6.6           sass_0.4.10       
 #> [25] S7_0.2.1           cli_3.6.5          withr_3.0.2        pkgdown_2.2.0     
 #> [29] magrittr_2.0.4     digest_0.6.39      grid_4.5.2         rappdirs_0.3.4    
