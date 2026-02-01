@@ -22,3 +22,7 @@ Thumbs.db
 
 # Cache
 inst/cache/
+
+# Python cache
+__pycache__/
+*.pyc
