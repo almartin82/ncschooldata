@@ -283,3 +283,31 @@ Chart
     # Prints: 2002=XXX, 2026=YYY, change=ZZZ, pct=PP.P%
 
 ![Chart](https://almartin82.github.io/idschooldata/articles/...) \`\`\`
+
+------------------------------------------------------------------------
+
+## Valid Filter Values (tidy enrollment via `fetch_enr(tidy = TRUE)`)
+
+### subgroup
+
+`total_enrollment`, `white`, `black`, `hispanic`, `asian`,
+`native_american`, `pacific_islander`, `multiracial`, `male`, `female`,
+`special_ed`, `lep`, `econ_disadv`
+
+### grade_level
+
+`PK`, `K`, `01`, `02`, `03`, `04`, `05`, `06`, `07`, `08`, `09`, `10`,
+`11`, `12`, `TOTAL`
+
+Grade aggregates from
+[`enr_grade_aggs()`](https://almartin82.github.io/ncschooldata/reference/enr_grade_aggs.md):
+`K8`, `HS`, `K12`
+
+### entity flags
+
+`is_state`, `is_district`, `is_campus`, `is_charter`
+
+Entity types in `type` column: `"State"`, `"District"`, `"Campus"`
+
+**Note:** `is_charter` is derived from the `charter_flag` column (value
+`"Y"`).
