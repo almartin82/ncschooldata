@@ -93,7 +93,8 @@ Enrollment decline hit North Carolina's second-largest district.
 
 ```r
 cms_trend <- enr_demo %>%
-  filter(district_id == "600", subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  filter(is_district, district_id == "600", subgroup == "total_enrollment",
+         grade_level == "TOTAL") %>%
   select(end_year, district_name, n_students) %>%
   mutate(change = n_students - lag(n_students))
 
@@ -105,17 +106,16 @@ cms_trend
 
 ---
 
-### 5. Charter schools serve a growing share of NC students
+### 5. Charter schools serve nearly 10% of NC students
 
-North Carolina's charter sector continues to expand.
+North Carolina's 219 charter campuses enroll over 143,000 students.
 
 ```r
 charter_summary <- enr_2024 %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  mutate(is_charter_lea = is_charter) %>%
-  group_by(is_charter_lea) %>%
+  filter(is_campus, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  group_by(is_charter) %>%
   summarize(
-    n_leas = n(),
+    n_schools = n(),
     students = sum(n_students, na.rm = TRUE),
     .groups = "drop"
   )
@@ -189,7 +189,7 @@ The Triangle's most diverse district is transforming.
 
 ```r
 durham_demographics <- enr_demo %>%
-  filter(district_id == "320", grade_level == "TOTAL",
+  filter(is_district, district_id == "320", grade_level == "TOTAL",
          subgroup %in% c("white", "black", "hispanic", "asian")) %>%
   group_by(end_year) %>%
   mutate(
@@ -207,9 +207,9 @@ durham_demographics
 
 ---
 
-### 9. English Learners grew 34% from 2018 to 2024
+### 9. English Learners grew 42% from 2018 to 2024
 
-NC schools are adapting to a multilingual reality.
+NC schools are adapting to a multilingual reality, adding nearly 50,000 EL students in six years.
 
 ```r
 el_trend <- enr_demo %>%
@@ -252,9 +252,9 @@ eastern_data
 
 ---
 
-### 11. Union County grew steadily since 2006
+### 11. Union County added 10,000 students then plateaued
 
-Charlotte's southern suburbs keep adding students.
+Charlotte's southern suburbs surged from 31,000 to 41,000 (2006-2015), then leveled off.
 
 ```r
 enr_union <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
@@ -302,9 +302,9 @@ mountain_data
 
 ---
 
-### 13. Special education enrollment from 2018 to 2024
+### 13. Special education share held steady at 13-14% since 2018
 
-More students identified, more services needed.
+Despite a 3% headcount decline, special education's share of total enrollment barely moved.
 
 ```r
 enr_sped <- fetch_enr_multi(c(2018, 2019, 2021, 2024), use_cache = TRUE)
@@ -356,12 +356,12 @@ metro_data
 
 ---
 
-### 15. COVID caused the largest enrollment drop in NC history
+### 15. COVID erased 56,000 students in a single year
 
-The 2020-2021 school year lost over 66,000 students statewide.
+The 2020-2021 school year saw the sharpest enrollment drop in NC history, followed by a partial recovery.
 
 ```r
-covid_trend <- enr %>%
+covid_trend <- enr_demo %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   select(end_year, n_students) %>%
   mutate(change = n_students - lag(n_students))
