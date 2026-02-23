@@ -51,24 +51,60 @@ fetch_enr <- function(end_year, tidy = TRUE, use_cache = TRUE) {
     return(read_cache(end_year, cache_type))
   }
 
-  # Get raw data from NC DPI
-  raw <- get_raw_enr(end_year)
+  # Try to get raw data from NC DPI
+  processed <- tryCatch({
+    raw <- get_raw_enr(end_year)
+    proc <- process_enr(raw, end_year)
+    if (tidy) {
+      proc <- tidy_enr(proc) |> id_enr_aggs()
+    }
+    proc
+  }, error = function(e) {
+    message(paste("NC DPI download failed:", e$message))
+    NULL
+  })
 
-  # Process to standard schema
-  processed <- process_enr(raw, end_year)
-
-  # Optionally tidy
-  if (tidy) {
-    processed <- tidy_enr(processed) |>
-      id_enr_aggs()
+  # If download produced empty/minimal data, try bundled fallback
+  needs_fallback <- is.null(processed) || nrow(processed) < 100
+  if (needs_fallback) {
+    bundled <- load_bundled_enr(end_year, cache_type)
+    if (!is.null(bundled)) {
+      message(paste("Using bundled data for", end_year))
+      processed <- bundled
+    } else if (is.null(processed)) {
+      stop(paste("No data available for year", end_year,
+                 "- NC DPI unavailable and no bundled data."))
+    }
   }
 
-  # Cache the result
-  if (use_cache) {
+  # Cache the result (only if we got real data)
+  if (use_cache && !is.null(processed) && nrow(processed) >= 100) {
     write_cache(processed, end_year, cache_type)
   }
 
   processed
+}
+
+
+#' Load bundled enrollment data as fallback
+#'
+#' When NC DPI is unreachable and no local cache exists, falls back to
+#' bundled data included in the package. This ensures vignettes and
+#' CI can always render. Data sourced from NC DPI School Report Cards.
+#'
+#' @param end_year School year end
+#' @param cache_type "tidy" or "wide"
+#' @return Data frame or NULL if no bundled data available for the year
+#' @keywords internal
+load_bundled_enr <- function(end_year, cache_type) {
+  filename <- paste0("enr_", cache_type, "_", end_year, ".rds")
+  bundled_path <- system.file("extdata", filename, package = "ncschooldata")
+
+  if (bundled_path == "" || !file.exists(bundled_path)) {
+    return(NULL)
+  }
+
+  readRDS(bundled_path)
 }
 
 
