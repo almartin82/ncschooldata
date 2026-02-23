@@ -17,19 +17,6 @@ knitr::opts_chunk$set(
   message = FALSE,
   cache = TRUE
 )
-
-# Check if we have assessment data cached or available
-# This allows vignette to build with cached data even when NC DPI API is down
-can_fetch_data <- tryCatch({
-  # Check for cached vignette data or actual cache
-  cache_dir <- rappdirs::user_cache_dir(appname = "ncschooldata")
-  cache_file <- file.path(cache_dir, "data", "assessment_tidy_2024.rds")
-  file.exists(cache_file) || requireNamespace("httr", quietly = TRUE)
-}, error = function(e) FALSE)
-
-if (!can_fetch_data) {
-  knitr::opts_chunk$set(eval = FALSE)
-}
 ```
 
 ```{r load-packages}
