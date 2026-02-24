@@ -144,6 +144,8 @@ demographics
 ggplot(demographics, aes(x = end_year, y = n_students / 1000, color = subgroup)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 3) +
+  geom_vline(xintercept = 2020.5, linetype = "dashed", color = "gray50", alpha = 0.7) +
+  annotate("text", x = 2020.5, y = 780, label = "COVID", color = "gray50", hjust = -0.2, size = 3.5) +
   scale_color_manual(values = c(
     "White" = "#4292C6",
     "Black" = "#807DBA",
@@ -168,36 +170,33 @@ Enrollment decline hit North Carolina’s second-largest district.
 
 ``` r
 cms_trend <- enr_demo %>%
-  filter(district_id == "600", subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  filter(is_district, district_id == "600", subgroup == "total_enrollment",
+         grade_level == "TOTAL") %>%
   select(end_year, district_name, n_students) %>%
   mutate(change = n_students - lag(n_students))
 
 stopifnot(nrow(cms_trend) > 0)
 cms_trend
-#> # A tibble: 891 × 4
-#>    end_year district_name                 n_students change
-#>       <dbl> <chr>                              <dbl>  <dbl>
-#>  1     2018 Charlotte-Mecklenburg Schools       1082     NA
-#>  2     2018 Charlotte-Mecklenburg Schools       1118     36
-#>  3     2018 Charlotte-Mecklenburg Schools       3170   2052
-#>  4     2018 Charlotte-Mecklenburg Schools        901  -2269
-#>  5     2018 Charlotte-Mecklenburg Schools        517   -384
-#>  6     2018 Charlotte-Mecklenburg Schools        535     18
-#>  7     2018 Charlotte-Mecklenburg Schools       2626   2091
-#>  8     2018 Charlotte-Mecklenburg Schools       1610  -1016
-#>  9     2018 Charlotte-Mecklenburg Schools        938   -672
-#> 10     2018 Charlotte-Mecklenburg Schools        533   -405
-#> # ℹ 881 more rows
+#> # A tibble: 5 × 4
+#>   end_year district_name                 n_students change
+#>      <dbl> <chr>                              <dbl>  <dbl>
+#> 1     2018 Charlotte-Mecklenburg Schools     146693     NA
+#> 2     2019 Charlotte-Mecklenburg Schools     147639    946
+#> 3     2020 Charlotte-Mecklenburg Schools     146255  -1384
+#> 4     2021 Charlotte-Mecklenburg Schools     137578  -8677
+#> 5     2024 Charlotte-Mecklenburg Schools     140415   2837
 ```
 
 ``` r
 ggplot(cms_trend, aes(x = end_year, y = n_students / 1000)) +
   geom_line(color = "#CB181D", linewidth = 1.2) +
   geom_point(color = "#CB181D", size = 3) +
+  geom_vline(xintercept = 2020.5, linetype = "dashed", color = "gray50", alpha = 0.7) +
+  annotate("text", x = 2020.5, y = 150, label = "COVID", color = "gray50", hjust = -0.2, size = 3.5) +
   geom_text(aes(label = scales::comma(n_students)), vjust = -1, size = 3.5) +
   scale_y_continuous(
     labels = scales::label_number(suffix = "K"),
-    limits = c(120, 165)
+    limits = c(130, 155)
   ) +
   labs(
     title = "Charlotte-Mecklenburg Schools: Post-COVID Enrollment",
@@ -208,17 +207,16 @@ ggplot(cms_trend, aes(x = end_year, y = n_students / 1000)) +
 
 ![](enrollment_hooks_files/figure-html/cms-chart-1.png)
 
-## 5. Charter schools serve a growing share of NC students
+## 5. Charter schools serve nearly 10% of NC students
 
-North Carolina’s charter sector continues to expand.
+North Carolina’s 219 charter campuses enroll over 143,000 students.
 
 ``` r
 charter_summary <- enr_2024 %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  mutate(is_charter_lea = is_charter) %>%
-  group_by(is_charter_lea) %>%
+  filter(is_campus, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  group_by(is_charter) %>%
   summarize(
-    n_leas = n(),
+    n_schools = n(),
     students = sum(n_students, na.rm = TRUE),
     .groups = "drop"
   )
@@ -232,14 +230,15 @@ charter_summary <- charter_summary %>%
 
 stopifnot(nrow(charter_summary) > 0)
 charter_summary
-#> # A tibble: 1 × 4
-#>   is_charter_lea n_leas students   pct
-#>   <lgl>           <int>    <dbl> <dbl>
-#> 1 FALSE             115  1364278  90.5
+#> # A tibble: 2 × 4
+#>   is_charter n_schools students   pct
+#>   <lgl>          <int>    <dbl> <dbl>
+#> 1 FALSE           2483  1364278  90.5
+#> 2 TRUE             219   143916   9.5
 ```
 
 ``` r
-ggplot(charter_summary, aes(x = ifelse(is_charter_lea, "Charter", "Traditional"), y = students / 1000, fill = is_charter_lea)) +
+ggplot(charter_summary, aes(x = ifelse(is_charter, "Charter", "Traditional"), y = students / 1000, fill = is_charter)) +
   geom_col(width = 0.6) +
   geom_text(aes(label = paste0(scales::comma(students), "\n(", pct, "%)")), vjust = -0.3, size = 4) +
   scale_fill_manual(values = c("FALSE" = "#2171B5", "TRUE" = "#41AB5D"), guide = "none") +
@@ -362,7 +361,7 @@ The Triangle’s most diverse district is transforming.
 
 ``` r
 durham_demographics <- enr_demo %>%
-  filter(district_id == "320", grade_level == "TOTAL",
+  filter(is_district, district_id == "320", grade_level == "TOTAL",
          subgroup %in% c("white", "black", "hispanic", "asian")) %>%
   group_by(end_year) %>%
   mutate(
@@ -374,20 +373,29 @@ durham_demographics <- enr_demo %>%
 
 stopifnot(nrow(durham_demographics) > 0)
 durham_demographics
-#> # A tibble: 833 × 4
+#> # A tibble: 20 × 4
 #>    end_year subgroup n_students   pct
 #>       <dbl> <chr>         <dbl> <dbl>
-#>  1     2018 asian            15   0  
-#>  2     2018 black           352   0.6
-#>  3     2018 hispanic        228   0.4
-#>  4     2018 white            30   0  
-#>  5     2018 asian            10   0  
-#>  6     2018 black           228   0.4
-#>  7     2018 hispanic        203   0.3
-#>  8     2018 white            70   0.1
-#>  9     2018 black           153   0.2
-#> 10     2018 hispanic        217   0.3
-#> # ℹ 823 more rows
+#>  1     2018 asian           753   2.3
+#>  2     2018 black         14976  46.3
+#>  3     2018 hispanic      10295  31.8
+#>  4     2018 white          6314  19.5
+#>  5     2019 asian           741   2.3
+#>  6     2019 black         14451  45.4
+#>  7     2019 hispanic      10299  32.4
+#>  8     2019 white          6332  19.9
+#>  9     2020 asian           691   2.2
+#> 10     2020 black         13924  43.6
+#> 11     2020 hispanic      10943  34.3
+#> 12     2020 white          6345  19.9
+#> 13     2021 asian           659   2.2
+#> 14     2021 black         12962  42.9
+#> 15     2021 hispanic      10482  34.7
+#> 16     2021 white          6083  20.2
+#> 17     2024 asian           701   2.4
+#> 18     2024 black         11339  39.2
+#> 19     2024 hispanic      11090  38.4
+#> 20     2024 white          5770  20
 ```
 
 ``` r
@@ -397,6 +405,7 @@ durham_demographics %>%
     labels = c("White", "Black", "Hispanic", "Asian"))) %>%
   ggplot(aes(x = end_year, y = pct, fill = subgroup)) +
   geom_area(alpha = 0.7) +
+  geom_vline(xintercept = 2020.5, linetype = "dashed", color = "white", alpha = 0.7) +
   scale_fill_manual(values = c(
     "White" = "#4292C6",
     "Black" = "#807DBA",
@@ -415,9 +424,10 @@ durham_demographics %>%
 
 ![](enrollment_hooks_files/figure-html/durham-chart-1.png)
 
-## 9. English Learners grew 34% from 2018 to 2024
+## 9. English Learners grew 42% from 2018 to 2024
 
-NC schools are adapting to a multilingual reality.
+NC schools are adapting to a multilingual reality, adding nearly 50,000
+EL students in six years.
 
 ``` r
 el_trend <- enr_demo %>%
@@ -442,6 +452,8 @@ ggplot(el_trend, aes(x = end_year, y = n_students / 1000)) +
   geom_area(fill = "#41AB5D", alpha = 0.3) +
   geom_line(color = "#41AB5D", linewidth = 1.2) +
   geom_point(color = "#41AB5D", size = 3) +
+  geom_vline(xintercept = 2020.5, linetype = "dashed", color = "gray50", alpha = 0.7) +
+  annotate("text", x = 2020.5, y = 185, label = "COVID", color = "gray50", hjust = -0.2, size = 3.5) +
   geom_text(aes(label = scales::comma(n_students)), vjust = -1, size = 3.5) +
   scale_y_continuous(
     labels = scales::label_number(suffix = "K"),
@@ -501,9 +513,10 @@ ggplot(eastern_data, aes(x = factor(end_year), y = total / 1000)) +
 
 ![](enrollment_hooks_files/figure-html/eastern-rural-chart-1.png)
 
-## 11. Union County grew steadily since 2006
+## 11. Union County added 10,000 students then plateaued
 
-Charlotte’s southern suburbs keep adding students.
+Charlotte’s southern suburbs surged from 31,000 to 41,000 (2006-2015),
+then leveled off.
 
 ``` r
 enr_union <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
@@ -592,9 +605,10 @@ ggplot(mountain_data, aes(x = factor(end_year), y = total / 1000)) +
 
 ![](enrollment_hooks_files/figure-html/mountain-chart-1.png)
 
-## 13. Special education enrollment from 2018 to 2024
+## 13. Special education share held steady at 13-14% since 2018
 
-More students identified, more services needed.
+Despite a 3% headcount decline, special education’s share of total
+enrollment barely moved.
 
 ``` r
 enr_sped <- fetch_enr_multi(c(2018, 2019, 2021, 2024), use_cache = TRUE)
@@ -690,12 +704,13 @@ ggplot(metro_data, aes(x = end_year, y = total / 1000, color = region)) +
 
 ![](enrollment_hooks_files/figure-html/triangle-triad-chart-1.png)
 
-## 15. COVID caused the largest enrollment drop in NC history
+## 15. COVID erased 56,000 students in a single year
 
-The 2020-2021 school year lost over 66,000 students statewide.
+The 2020-2021 school year saw the sharpest enrollment drop in NC
+history, followed by a partial recovery.
 
 ``` r
-covid_trend <- enr %>%
+covid_trend <- enr_demo %>%
   filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   select(end_year, n_students) %>%
   mutate(change = n_students - lag(n_students))
@@ -705,22 +720,24 @@ covid_trend
 #> # A tibble: 5 × 3
 #>   end_year n_students change
 #>      <dbl>      <dbl>  <dbl>
-#> 1     2006    1390168     NA
-#> 2     2010    1440212  50044
-#> 3     2015    1502009  61797
-#> 4     2020    1525592  23583
-#> 5     2024    1508194 -17398
+#> 1     2018    1521108     NA
+#> 2     2019    1535687  14579
+#> 3     2020    1525592 -10095
+#> 4     2021    1469401 -56191
+#> 5     2024    1508194  38793
 ```
 
 ``` r
 ggplot(covid_trend, aes(x = end_year, y = n_students / 1e6)) +
   geom_line(color = "#2171B5", linewidth = 1.2) +
   geom_point(aes(color = ifelse(end_year == 2021, "COVID", "Normal")), size = 4) +
+  geom_vline(xintercept = 2020.5, linetype = "dashed", color = "gray50", alpha = 0.7) +
+  annotate("text", x = 2020.5, y = 1.55, label = "COVID", color = "gray50", hjust = -0.2, size = 3.5) +
   geom_text(aes(label = scales::comma(n_students)), vjust = -1, size = 3.5) +
   scale_color_manual(values = c("COVID" = "#CB181D", "Normal" = "#2171B5"), guide = "none") +
   scale_y_continuous(
     labels = scales::label_number(suffix = "M"),
-    limits = c(1.2, 1.7)
+    limits = c(1.35, 1.6)
   ) +
   labs(
     title = "NC Enrollment: COVID Drop and Partial Recovery",
@@ -774,18 +791,19 @@ sessionInfo()
 #> 
 #> other attached packages:
 #> [1] ggplot2_4.0.2      tidyr_1.3.2        dplyr_1.2.0        ncschooldata_0.1.0
+#> [5] testthat_3.3.2    
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     tidyselect_1.2.1  
-#>  [5] jquerylib_0.1.4    systemfonts_1.3.1  scales_1.4.0       textshaping_1.0.4 
-#>  [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    
-#> [13] generics_0.1.4     curl_7.0.0         knitr_1.51         tibble_3.3.1      
-#> [17] desc_1.4.3         bslib_0.10.0       pillar_1.11.1      RColorBrewer_1.1-3
-#> [21] rlang_1.1.7        utf8_1.2.6         cachem_1.1.0       xfun_0.56         
-#> [25] fs_1.6.6           sass_0.4.10        S7_0.2.1           cli_3.6.5         
-#> [29] withr_3.0.2        pkgdown_2.2.0      magrittr_2.0.4     digest_0.6.39     
-#> [33] grid_4.5.2         rappdirs_0.3.4     lifecycle_1.0.5    vctrs_0.7.1       
-#> [37] evaluate_1.0.5     glue_1.8.0         farver_2.1.2       codetools_0.2-20  
-#> [41] ragg_1.5.0         httr_1.4.8         rmarkdown_2.30     purrr_1.2.1       
-#> [45] tools_4.5.2        pkgconfig_2.0.3    htmltools_0.5.9
+#>  [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     brio_1.1.5        
+#>  [5] tidyselect_1.2.1   jquerylib_0.1.4    systemfonts_1.3.1  scales_1.4.0      
+#>  [9] textshaping_1.0.4  yaml_2.3.12        fastmap_1.2.0      R6_2.6.1          
+#> [13] labeling_0.4.3     generics_0.1.4     curl_7.0.0         knitr_1.51        
+#> [17] tibble_3.3.1       desc_1.4.3         bslib_0.10.0       pillar_1.11.1     
+#> [21] RColorBrewer_1.1-3 rlang_1.1.7        utf8_1.2.6         cachem_1.1.0      
+#> [25] xfun_0.56          S7_0.2.1           fs_1.6.6           sass_0.4.10       
+#> [29] cli_3.6.5          withr_3.0.2        pkgdown_2.2.0      magrittr_2.0.4    
+#> [33] digest_0.6.39      grid_4.5.2         rappdirs_0.3.4     lifecycle_1.0.5   
+#> [37] vctrs_0.7.1        evaluate_1.0.5     glue_1.8.0         farver_2.1.2      
+#> [41] codetools_0.2-20   ragg_1.5.0         httr_1.4.8         rmarkdown_2.30    
+#> [45] purrr_1.2.1        tools_4.5.2        pkgconfig_2.0.3    htmltools_0.5.9
 ```
