@@ -68,7 +68,6 @@ articles:
     navbar: ~
     contents:
       - enrollment_hooks
-      - northcarolina-assessment
 
 home:
   sidebar:
