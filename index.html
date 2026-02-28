@@ -56,157 +56,25 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><strong><a href="https://almartin82.github.io/ncschooldata/">Documentation</a></strong> | <strong><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html">Getting Started</a></strong></p>
-<p>Part of the <a href="https://github.com/almartin82/njschooldata" class="external-link">State Schooldata Project</a> - fetching and analyzing state-published school data in R and Python. The original <a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a> package for New Jersey inspired this family of 50 state packages.</p>
-<p>Fetch and analyze North Carolina school enrollment data from the NC Department of Public Instruction in R or Python. 1.5 million students across 115 traditional districts and 219 charter schools, with data from 2006 to 2024.</p>
+<p>North Carolina educates 1.5 million students across 115 traditional districts and 219 charter schools – and the demographic, geographic, and sector shifts hiding in the data are dramatic.</p>
+<p>Part of the <a href="https://github.com/almartin82/njschooldata" class="external-link">njschooldata</a> family of state education data packages.</p>
+<p><strong><a href="https://almartin82.github.io/ncschooldata/">Full documentation</a></strong> – all 15 stories with interactive charts, getting-started guide, and complete function reference.</p>
 <div class="section level2">
-<h2 id="what-can-you-find-with-ncschooldata">What can you find with ncschooldata?<a class="anchor" aria-label="anchor" href="#what-can-you-find-with-ncschooldata"></a>
+<h2 id="highlights">Highlights<a class="anchor" aria-label="anchor" href="#highlights"></a>
 </h2>
-<p>Here are fifteen stories hiding in the numbers:</p>
-<hr>
-<div class="section level3">
-<h3 id="id_1-north-carolinas-15-million-students-peaked-in-2019--covid-erased-a-decade-of-growth">1. North Carolina’s 1.5 million students peaked in 2019 – COVID erased a decade of growth<a class="anchor" aria-label="anchor" href="#id_1-north-carolinas-15-million-students-peaked-in-2019--covid-erased-a-decade-of-growth"></a>
-</h3>
-<p>NC grew steadily from 1.39M to 1.54M, then lost 66,000 students by 2021. Recovery is underway but the state is still 27K below its 2019 peak.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://almartin82.github.io/ncschooldata">ncschooldata</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2006</span>, <span class="fl">2010</span>, <span class="fl">2015</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">statewide</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">statewide</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">statewide</span></span>
-<span><span class="co">#&gt; # A tibble: 5 x 2</span></span>
-<span><span class="co">#&gt;   end_year n_students</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt;      &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2006    1390168</span></span>
-<span><span class="co">#&gt; 2     2010    1440212</span></span>
-<span><span class="co">#&gt; 3     2015    1502009</span></span>
-<span><span class="co">#&gt; 4     2020    1525592</span></span>
-<span><span class="co">#&gt; 5     2024    1508194</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/statewide-chart-1.png" alt="NC statewide enrollment"><div class="figcaption">NC statewide enrollment</div>
-</div>
-<hr>
-</div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="id_2-wake-county-160000-students-and-bigger-than-many-states">2. Wake County: 160,000 students and bigger than many states<a class="anchor" aria-label="anchor" href="#id_2-wake-county-160000-students-and-bigger-than-many-states"></a>
+<h3 id="id_1-charter-schools-grew-from-26000-to-144000-students-in-18-years">1. Charter schools grew from 26,000 to 144,000 students in 18 years<a class="anchor" aria-label="anchor" href="#id_1-charter-schools-grew-from-26000-to-144000-students-in-18-years"></a>
 </h3>
-<p>Wake County Schools is the largest district in NC, with nearly 160,000 students. Charlotte-Mecklenburg follows at 140,000.</p>
+<p>North Carolina’s charter sector has exploded. In 2006, 99 charter schools served 26,000 students. By 2024, 219 charters serve 144,000 – nearly 10% of all students.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">top_districts</span> <span class="op">&lt;-</span> <span class="va">enr_2024</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">top_districts</span><span class="op">)</span> <span class="op">==</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">top_districts</span></span>
-<span><span class="co">#&gt; # A tibble: 10 x 2</span></span>
-<span><span class="co">#&gt;    district_name                          n_students</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;                                       &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt;  1 Wake County Schools                        159675</span></span>
-<span><span class="co">#&gt;  2 Charlotte-Mecklenburg Schools              140415</span></span>
-<span><span class="co">#&gt;  3 Guilford County Schools                     65879</span></span>
-<span><span class="co">#&gt;  4 Winston Salem / Forsyth County Schools      50842</span></span>
-<span><span class="co">#&gt;  5 Cumberland County Schools                   47871</span></span>
-<span><span class="co">#&gt;  6 Union County Public Schools                 41378</span></span>
-<span><span class="co">#&gt;  7 Johnston County Public Schools              36745</span></span>
-<span><span class="co">#&gt;  8 Cabarrus County Schools                     34919</span></span>
-<span><span class="co">#&gt;  9 Durham Public Schools                       30783</span></span>
-<span><span class="co">#&gt; 10 Gaston County Schools                       29714</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/top-districts-chart-1.png" alt="Top NC districts"><div class="figcaption">Top NC districts</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_3-white-students-dropped-from-47-to-43-while-hispanic-enrollment-surged">3. White students dropped from 47% to 43% while Hispanic enrollment surged<a class="anchor" aria-label="anchor" href="#id_3-white-students-dropped-from-47-to-43-while-hispanic-enrollment-surged"></a>
-</h3>
-<p>Between 2018 and 2024, white enrollment fell by 106,000 students while Hispanic enrollment grew by 57,000. North Carolina is becoming a majority-minority school system.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_demo</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2019</span>, <span class="fl">2020</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="va">enr_demo</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
-<span>         <span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"black"</span>, <span class="st">"hispanic"</span>, <span class="st">"asian"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">subgroup</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>subgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">subgroup</span>,</span>
-<span>    levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"black"</span>, <span class="st">"hispanic"</span>, <span class="st">"asian"</span><span class="op">)</span>,</span>
-<span>    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"White"</span>, <span class="st">"Black"</span>, <span class="st">"Hispanic"</span>, <span class="st">"Asian"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">demographics</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">demographics</span></span>
-<span><span class="co">#&gt; # A tibble: 20 x 3</span></span>
-<span><span class="co">#&gt;    end_year subgroup n_students</span></span>
-<span><span class="co">#&gt;       &lt;dbl&gt; &lt;fct&gt;         &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt;  1     2018 Asian         51706</span></span>
-<span><span class="co">#&gt;  2     2018 Black        393618</span></span>
-<span><span class="co">#&gt;  3     2018 Hispanic     271304</span></span>
-<span><span class="co">#&gt;  4     2018 White        749498</span></span>
-<span><span class="co">#&gt;  5     2019 Asian         54349</span></span>
-<span><span class="co">#&gt;  6     2019 Black        394222</span></span>
-<span><span class="co">#&gt;  7     2019 Hispanic     282328</span></span>
-<span><span class="co">#&gt;  8     2019 White        746767</span></span>
-<span><span class="co">#&gt;  9     2020 Asian         55582</span></span>
-<span><span class="co">#&gt; 10     2020 Black        382563</span></span>
-<span><span class="co">#&gt; 11     2020 Hispanic     292782</span></span>
-<span><span class="co">#&gt; 12     2020 White        722929</span></span>
-<span><span class="co">#&gt; 13     2021 Asian         56197</span></span>
-<span><span class="co">#&gt; 14     2021 Black        373647</span></span>
-<span><span class="co">#&gt; 15     2021 Hispanic     285867</span></span>
-<span><span class="co">#&gt; 16     2021 White        687491</span></span>
-<span><span class="co">#&gt; 17     2024 Asian         64402</span></span>
-<span><span class="co">#&gt; 18     2024 Black        369522</span></span>
-<span><span class="co">#&gt; 19     2024 Hispanic     328041</span></span>
-<span><span class="co">#&gt; 20     2024 White        643051</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/demographics-chart-1.png" alt="NC demographics"><div class="figcaption">NC demographics</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_4-charlotte-mecklenburg-lost-10000-students-during-covid-then-partially-recovered">4. Charlotte-Mecklenburg lost 10,000 students during COVID then partially recovered<a class="anchor" aria-label="anchor" href="#id_4-charlotte-mecklenburg-lost-10000-students-during-covid-then-partially-recovered"></a>
-</h3>
-<p>CMS dropped from 147,600 in 2019 to 137,600 in 2021 – a staggering 10,000-student loss. By 2024 it has clawed back to 140,400 but remains 7,200 below its peak.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_cms</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2019</span>, <span class="fl">2020</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">cms_trend</span> <span class="op">&lt;-</span> <span class="va">enr_cms</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Charlotte-Mecklenburg"</span>, <span class="va">district_name</span><span class="op">)</span>,</span>
-<span>         <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>change <span class="op">=</span> <span class="va">n_students</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cms_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">cms_trend</span></span>
-<span><span class="co">#&gt; # A tibble: 5 x 4</span></span>
-<span><span class="co">#&gt;   end_year district_name                 n_students change</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;                              &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2018 Charlotte-Mecklenburg Schools     146693     NA</span></span>
-<span><span class="co">#&gt; 2     2019 Charlotte-Mecklenburg Schools     147639    946</span></span>
-<span><span class="co">#&gt; 3     2020 Charlotte-Mecklenburg Schools     146255  -1384</span></span>
-<span><span class="co">#&gt; 4     2021 Charlotte-Mecklenburg Schools     137578  -8677</span></span>
-<span><span class="co">#&gt; 5     2024 Charlotte-Mecklenburg Schools     140415   2837</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/cms-chart-1.png" alt="CMS enrollment"><div class="figcaption">CMS enrollment</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_5-charter-schools-grew-from-26000-to-144000-students-in-18-years">5. Charter schools grew from 26,000 to 144,000 students in 18 years<a class="anchor" aria-label="anchor" href="#id_5-charter-schools-grew-from-26000-to-144000-students-in-18-years"></a>
-</h3>
-<p>North Carolina’s charter sector has exploded. In 2006, 99 charter schools served 26,000 students. By 2024, 219 charters serve 144,000 – nearly 10% of all students.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">charter_summary</span> <span class="op">&lt;-</span> <span class="va">enr_2024</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">charter_summary</span> <span class="op">&lt;-</span> <span class="va">enr_2024</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_campus</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">is_charter</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
@@ -232,36 +100,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/charter-chart-1.png" alt="Charter enrollment"><div class="figcaption">Charter enrollment</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#charter-schools-grew-from-26000-to-144000-students-in-18-years">(source)</a></p>
 </div>
 <div class="section level3">
-<h3 id="id_6-half-of-nc-students-are-economically-disadvantaged">6. Half of NC students are economically disadvantaged<a class="anchor" aria-label="anchor" href="#id_6-half-of-nc-students-are-economically-disadvantaged"></a>
-</h3>
-<p>757,944 students – 50.3% of the state – qualify as economically disadvantaged. This is the first year econ_disadv data is available in the package.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">econ_data</span> <span class="op">&lt;-</span> <span class="va">enr_2024</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
-<span>         <span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"total_enrollment"</span>, <span class="st">"econ_disadv"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">subgroup</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">n_students</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">econ_data</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">econ_data</span></span>
-<span><span class="co">#&gt; # A tibble: 2 x 3</span></span>
-<span><span class="co">#&gt;   subgroup         n_students   pct</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 total_enrollment    1508194 100</span></span>
-<span><span class="co">#&gt; 2 econ_disadv          757944  50.3</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/econ-disadv-chart-1.png" alt="Econ disadvantaged"><div class="figcaption">Econ disadvantaged</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_7-durham-is-nearly-a-5050-black-hispanic-district">7. Durham is nearly a 50/50 Black-Hispanic district<a class="anchor" aria-label="anchor" href="#id_7-durham-is-nearly-a-5050-black-hispanic-district"></a>
+<h3 id="id_2-durham-is-nearly-a-5050-black-hispanic-district">2. Durham is nearly a 50/50 Black-Hispanic district<a class="anchor" aria-label="anchor" href="#id_2-durham-is-nearly-a-5050-black-hispanic-district"></a>
 </h3>
 <p>In 2018 Durham was 46% Black and 32% Hispanic. By 2024 the gap closed to 39% Black and 38% Hispanic. The crossover is imminent.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">enr_durham</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">durham_demographics</span> <span class="op">&lt;-</span> <span class="va">enr_durham</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -295,103 +140,13 @@
 <div class="float">
 <img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/durham-chart-1.png" alt="Durham demographics"><div class="figcaption">Durham demographics</div>
 </div>
-<hr>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#durham-is-nearly-a-5050-black-hispanic-district">(source)</a></p>
 </div>
 <div class="section level3">
-<h3 id="id_8-english-learners-grew-42-in-six-years">8. English Learners grew 42% in six years<a class="anchor" aria-label="anchor" href="#id_8-english-learners-grew-42-in-six-years"></a>
-</h3>
-<p>From 118,569 in 2018 to 168,383 in 2024, NC schools added nearly 50,000 English Learners. LEP students now make up 11.2% of total enrollment.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_lep</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2019</span>, <span class="fl">2020</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">lep_trend</span> <span class="op">&lt;-</span> <span class="va">enr_lep</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"lep"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct_change <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">n_students</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nth.html" class="external-link">first</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">lep_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">lep_trend</span></span>
-<span><span class="co">#&gt; # A tibble: 5 x 3</span></span>
-<span><span class="co">#&gt;   end_year n_students pct_change</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2018     118569        0</span></span>
-<span><span class="co">#&gt; 2     2019     127843        7.8</span></span>
-<span><span class="co">#&gt; 3     2020     126240        6.5</span></span>
-<span><span class="co">#&gt; 4     2021     131322       10.8</span></span>
-<span><span class="co">#&gt; 5     2024     168383       42</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/lep-chart-1.png" alt="English Learners trend"><div class="figcaption">English Learners trend</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_9-wake-county-grew-33-since-2006-but-may-have-peaked">9. Wake County grew 33% since 2006 but may have peaked<a class="anchor" aria-label="anchor" href="#id_9-wake-county-grew-33-since-2006-but-may-have-peaked"></a>
-</h3>
-<p>Wake County added nearly 40,000 students from 2006 to 2020, then dipped slightly by 2024. After years of relentless growth, has the Research Triangle’s anchor district plateaued?</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_wake</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2006</span>, <span class="fl">2010</span>, <span class="fl">2015</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">wake_trend</span> <span class="op">&lt;-</span> <span class="va">enr_wake</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
-<span>         <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Wake"</span>, <span class="va">district_name</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>change <span class="op">=</span> <span class="va">n_students</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">wake_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">wake_trend</span></span>
-<span><span class="co">#&gt; # A tibble: 5 x 4</span></span>
-<span><span class="co">#&gt;   end_year district_name       n_students change</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;                    &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2006 Wake County Schools     120367     NA</span></span>
-<span><span class="co">#&gt; 2     2010 Wake County Schools     139064  18697</span></span>
-<span><span class="co">#&gt; 3     2015 Wake County Schools     153488  14424</span></span>
-<span><span class="co">#&gt; 4     2020 Wake County Schools     160622   7134</span></span>
-<span><span class="co">#&gt; 5     2024 Wake County Schools     159675   -947</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/wake-chart-1.png" alt="Wake County growth"><div class="figcaption">Wake County growth</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_10-the-coast-is-growing-while-the-piedmont-shrinks">10. The coast is growing while the Piedmont shrinks<a class="anchor" aria-label="anchor" href="#id_10-the-coast-is-growing-while-the-piedmont-shrinks"></a>
-</h3>
-<p>Coastal counties (New Hanover, Brunswick, Pender) gained students while Piedmont cities (Guilford, Forsyth, Alamance) lost nearly 9,000 since 2015.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_regional</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">coastal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"New Hanover"</span>, <span class="st">"Brunswick"</span>, <span class="st">"Pender"</span><span class="op">)</span></span>
-<span><span class="va">piedmont</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Guilford"</span>, <span class="st">"Forsyth"</span>, <span class="st">"Alamance"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">regional</span> <span class="op">&lt;-</span> <span class="va">enr_regional</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">coastal</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Coast"</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">piedmont</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Piedmont"</span>,</span>
-<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coast"</span>, <span class="st">"Piedmont"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">region</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">regional</span><span class="op">)</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></span>
-<span><span class="va">regional</span></span>
-<span><span class="co">#&gt; # A tibble: 4 x 3</span></span>
-<span><span class="co">#&gt;   end_year region    total</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2015 Coast     46807</span></span>
-<span><span class="co">#&gt; 2     2015 Piedmont 147754</span></span>
-<span><span class="co">#&gt; 3     2024 Coast     48559</span></span>
-<span><span class="co">#&gt; 4     2024 Piedmont 138801</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/regional-chart-1.png" alt="Coast vs Piedmont"><div class="figcaption">Coast vs Piedmont</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_11-rural-eastern-nc-lost-25-of-its-students-since-2015">11. Rural eastern NC lost 25% of its students since 2015<a class="anchor" aria-label="anchor" href="#id_11-rural-eastern-nc-lost-25-of-its-students-since-2015"></a>
+<h3 id="id_3-rural-eastern-nc-lost-25-of-its-students-since-2015">3. Rural eastern NC lost 25% of its students since 2015<a class="anchor" aria-label="anchor" href="#id_3-rural-eastern-nc-lost-25-of-its-students-since-2015"></a>
 </h3>
 <p>Eight tobacco belt counties (Edgecombe, Halifax, Hertford, Northampton, Bertie, Martin, Washington, Tyrrell) dropped from 21,596 to 16,219 students – a 25% decline in under a decade.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">enr_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">eastern_rural</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Edgecombe"</span>, <span class="st">"Halifax"</span>, <span class="st">"Hertford"</span>, <span class="st">"Northampton"</span>,</span>
@@ -415,153 +170,101 @@
 <div class="float">
 <img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/eastern-rural-chart-1.png" alt="Eastern NC decline"><div class="figcaption">Eastern NC decline</div>
 </div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_12-union-county-grew-32-since-2006-on-charlotte-suburban-boom">12. Union County grew 32% since 2006 on Charlotte suburban boom<a class="anchor" aria-label="anchor" href="#id_12-union-county-grew-32-since-2006-on-charlotte-suburban-boom"></a>
-</h3>
-<p>Union County Public Schools went from 31,330 to 41,378 students. Weddington, Waxhaw, and Indian Trail fueled the growth, though the pace has slowed since 2015.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_union</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2006</span>, <span class="fl">2010</span>, <span class="fl">2015</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">union_trend</span> <span class="op">&lt;-</span> <span class="va">enr_union</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
-<span>         <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Union"</span>, <span class="va">district_name</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">union_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">union_trend</span></span>
-<span><span class="co">#&gt; # A tibble: 5 x 3</span></span>
-<span><span class="co">#&gt;   end_year district_name               n_students</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;                            &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2006 Union County Public Schools      31330</span></span>
-<span><span class="co">#&gt; 2     2010 Union County Public Schools      38282</span></span>
-<span><span class="co">#&gt; 3     2015 Union County Public Schools      41296</span></span>
-<span><span class="co">#&gt; 4     2020 Union County Public Schools      41452</span></span>
-<span><span class="co">#&gt; 5     2024 Union County Public Schools      41378</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/union-growth-chart-1.png" alt="Union County growth"><div class="figcaption">Union County growth</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_13-asheville-area-mountain-counties-lost-10-of-students">13. Asheville-area mountain counties lost 10% of students<a class="anchor" aria-label="anchor" href="#id_13-asheville-area-mountain-counties-lost-10-of-students"></a>
-</h3>
-<p>Seven mountain counties around Asheville (Buncombe, Henderson, Haywood, Madison, Transylvania, Yancey, Mitchell) dropped from 55,623 to 49,817 students since 2015.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_mountain</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">mountain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Buncombe"</span>, <span class="st">"Henderson"</span>, <span class="st">"Haywood"</span>, <span class="st">"Madison"</span>,</span>
-<span>              <span class="st">"Transylvania"</span>, <span class="st">"Yancey"</span>, <span class="st">"Mitchell"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">mountain_data</span> <span class="op">&lt;-</span> <span class="va">enr_mountain</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>is_mountain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">mountain</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_mountain</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
-<span>    total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>    n_districts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">mountain_data</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">mountain_data</span></span>
-<span><span class="co">#&gt; # A tibble: 2 x 3</span></span>
-<span><span class="co">#&gt;   end_year total n_districts</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt; &lt;dbl&gt;       &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1     2015 55623           7</span></span>
-<span><span class="co">#&gt; 2     2024 49817           7</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/mountain-chart-1.png" alt="Mountain counties"><div class="figcaption">Mountain counties</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_14-special-education-holds-steady-at-13-14-of-enrollment">14. Special education holds steady at 13-14% of enrollment<a class="anchor" aria-label="anchor" href="#id_14-special-education-holds-steady-at-13-14-of-enrollment"></a>
-</h3>
-<p>NC’s special education population has been remarkably stable at around 13-14% of total enrollment since 2018, even as overall enrollment fluctuated with COVID.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_sped</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2019</span>, <span class="fl">2020</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sped_trend</span> <span class="op">&lt;-</span> <span class="va">enr_sped</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
-<span>         <span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"total_enrollment"</span>, <span class="st">"special_ed"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">subgroup</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">subgroup</span>, values_from <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    pct_sped <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">special_ed</span> <span class="op">/</span> <span class="va">total_enrollment</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    sped_change <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">special_ed</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nth.html" class="external-link">first</a></span><span class="op">(</span><span class="va">special_ed</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sped_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">sped_trend</span></span>
-<span><span class="co">#&gt; # A tibble: 5 x 5</span></span>
-<span><span class="co">#&gt;   end_year total_enrollment special_ed pct_sped sped_change</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt;            &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2018          1521108     208352     13.7         0</span></span>
-<span><span class="co">#&gt; 2     2019          1535687     211629     13.8         1.6</span></span>
-<span><span class="co">#&gt; 3     2020          1525592     209750     13.7         0.7</span></span>
-<span><span class="co">#&gt; 4     2021          1469401     204434     13.9        -1.9</span></span>
-<span><span class="co">#&gt; 5     2024          1508194     202380     13.4        -2.9</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/sped-chart-1.png" alt="Special ed trend"><div class="figcaption">Special ed trend</div>
-</div>
-<hr>
-</div>
-<div class="section level3">
-<h3 id="id_15-triangle-vs-triad-diverging-metro-areas">15. Triangle vs Triad: diverging metro areas<a class="anchor" aria-label="anchor" href="#id_15-triangle-vs-triad-diverging-metro-areas"></a>
-</h3>
-<p>The Research Triangle (Wake, Durham, Orange, Johnston, Chatham) grew from 237K to 243K while the Piedmont Triad (Guilford, Forsyth, Davidson, Randolph, Alamance) shrank from 185K to 171K since 2015.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">enr_metro</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Wake"</span>, <span class="st">"Durham"</span>, <span class="st">"Orange"</span>, <span class="st">"Johnston"</span>, <span class="st">"Chatham"</span><span class="op">)</span></span>
-<span><span class="va">triad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Guilford"</span>, <span class="st">"Forsyth"</span>, <span class="st">"Davidson"</span>, <span class="st">"Randolph"</span>, <span class="st">"Alamance"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">metro_data</span> <span class="op">&lt;-</span> <span class="va">enr_metro</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">triangle</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Triangle"</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">triad</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Triad"</span>,</span>
-<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Triangle"</span>, <span class="st">"Triad"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">region</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">metro_data</span><span class="op">)</span> <span class="op">==</span> <span class="fl">6</span><span class="op">)</span></span>
-<span><span class="va">metro_data</span></span>
-<span><span class="co">#&gt; # A tibble: 6 x 3</span></span>
-<span><span class="co">#&gt;   end_year region    total</span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1     2015 Triad    184979</span></span>
-<span><span class="co">#&gt; 2     2015 Triangle 236723</span></span>
-<span><span class="co">#&gt; 3     2020 Triad    181208</span></span>
-<span><span class="co">#&gt; 4     2020 Triangle 246320</span></span>
-<span><span class="co">#&gt; 5     2024 Triad    171352</span></span>
-<span><span class="co">#&gt; 6     2024 Triangle 243012</span></span></code></pre></div>
-<div class="float">
-<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/triangle-triad-chart-1.png" alt="Triangle vs Triad"><div class="figcaption">Triangle vs Triad</div>
-</div>
-<hr>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#rural-eastern-nc-lost-25-of-its-students-since-2015">(source)</a></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h2 id="data-taxonomy">Data Taxonomy<a class="anchor" aria-label="anchor" href="#data-taxonomy"></a>
 </h2>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"almartin82/ncschooldata"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="27%">
+<col width="19%">
+<col width="27%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>Category</th>
+<th>Years</th>
+<th>Function</th>
+<th>Details</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Enrollment</strong></td>
+<td>2006-2024</td>
+<td>
+<code><a href="reference/fetch_enr.html">fetch_enr()</a></code> / <code><a href="reference/fetch_enr_multi.html">fetch_enr_multi()</a></code>
+</td>
+<td>State, district, school. Race, gender, FRPL, SpEd, LEP</td>
+</tr>
+<tr class="even">
+<td><strong>Assessments</strong></td>
+<td>2014-2024</td>
+<td>
+<code><a href="reference/fetch_assessment.html">fetch_assessment()</a></code> / <code><a href="reference/fetch_assessment_multi.html">fetch_assessment_multi()</a></code>
+</td>
+<td>EOG (3-8) + EOC. State, district, school. All ESSA subgroups</td>
+</tr>
+<tr class="odd">
+<td><strong>Directory</strong></td>
+<td>Current</td>
+<td><code><a href="reference/fetch_directory.html">fetch_directory()</a></code></td>
+<td>School names, addresses, types</td>
+</tr>
+<tr class="even">
+<td>Graduation</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="odd">
+<td>Per-Pupil Spending</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="even">
+<td>Accountability</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="odd">
+<td>Chronic Absence</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="even">
+<td>EL Progress</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+<tr class="odd">
+<td>Special Ed</td>
+<td>—</td>
+<td>—</td>
+<td>Not yet available</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>See the full <a href="DATA-CATEGORY-TAXONOMY.html">data category taxonomy</a></p>
+</blockquote>
 </div>
 <div class="section level2">
-<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <div class="section level3">
 <h3 id="r">R<a class="anchor" aria-label="anchor" href="#r"></a>
 </h3>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://almartin82.github.io/ncschooldata">ncschooldata</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"almartin82/ncschooldata"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://almartin82.github.io/ncschooldata">ncschooldata</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fetch one year</span></span>
@@ -587,125 +290,33 @@
 <div class="section level3">
 <h3 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>
 </h3>
-<div class="sourceCode" id="cb18"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="im">import</span> pyncschooldata <span class="im">as</span> nc</span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co"># Fetch one year</span></span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>enr_2024 <span class="op">=</span> nc.fetch_enr(<span class="dv">2024</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co"># Fetch multiple years</span></span>
-<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>enr_recent <span class="op">=</span> nc.fetch_enr_multi([<span class="dv">2018</span>, <span class="dv">2019</span>, <span class="dv">2020</span>, <span class="dv">2021</span>, <span class="dv">2024</span>])</span>
-<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a></span>
-<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co"># State totals</span></span>
-<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>state_total <span class="op">=</span> enr_2024[</span>
-<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>    (enr_2024[<span class="st">'is_state'</span>] <span class="op">==</span> <span class="va">True</span>) <span class="op">&amp;</span></span>
-<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>    (enr_2024[<span class="st">'subgroup'</span>] <span class="op">==</span> <span class="st">'total_enrollment'</span>) <span class="op">&amp;</span></span>
-<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a>    (enr_2024[<span class="st">'grade_level'</span>] <span class="op">==</span> <span class="st">'TOTAL'</span>)</span>
-<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a>]</span>
-<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a></span>
-<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a><span class="co"># District breakdown</span></span>
-<span id="cb18-17"><a href="#cb18-17" tabindex="-1"></a>districts <span class="op">=</span> enr_2024[</span>
-<span id="cb18-18"><a href="#cb18-18" tabindex="-1"></a>    (enr_2024[<span class="st">'is_district'</span>] <span class="op">==</span> <span class="va">True</span>) <span class="op">&amp;</span></span>
-<span id="cb18-19"><a href="#cb18-19" tabindex="-1"></a>    (enr_2024[<span class="st">'subgroup'</span>] <span class="op">==</span> <span class="st">'total_enrollment'</span>) <span class="op">&amp;</span></span>
-<span id="cb18-20"><a href="#cb18-20" tabindex="-1"></a>    (enr_2024[<span class="st">'grade_level'</span>] <span class="op">==</span> <span class="st">'TOTAL'</span>)</span>
-<span id="cb18-21"><a href="#cb18-21" tabindex="-1"></a>].sort_values(<span class="st">'n_students'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span></code></pre></div>
-<hr>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="im">import</span> pyncschooldata <span class="im">as</span> nc</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co"># Fetch one year</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>enr_2024 <span class="op">=</span> nc.fetch_enr(<span class="dv">2024</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co"># Fetch multiple years</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>enr_recent <span class="op">=</span> nc.fetch_enr_multi([<span class="dv">2018</span>, <span class="dv">2019</span>, <span class="dv">2020</span>, <span class="dv">2021</span>, <span class="dv">2024</span>])</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co"># State totals</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>state_total <span class="op">=</span> enr_2024[</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>    (enr_2024[<span class="st">'is_state'</span>] <span class="op">==</span> <span class="va">True</span>) <span class="op">&amp;</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>    (enr_2024[<span class="st">'subgroup'</span>] <span class="op">==</span> <span class="st">'total_enrollment'</span>) <span class="op">&amp;</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>    (enr_2024[<span class="st">'grade_level'</span>] <span class="op">==</span> <span class="st">'TOTAL'</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>]</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co"># District breakdown</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>districts <span class="op">=</span> enr_2024[</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>    (enr_2024[<span class="st">'is_district'</span>] <span class="op">==</span> <span class="va">True</span>) <span class="op">&amp;</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    (enr_2024[<span class="st">'subgroup'</span>] <span class="op">==</span> <span class="st">'total_enrollment'</span>) <span class="op">&amp;</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>    (enr_2024[<span class="st">'grade_level'</span>] <span class="op">==</span> <span class="st">'TOTAL'</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>].sort_values(<span class="st">'n_students'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="data-availability">Data availability<a class="anchor" aria-label="anchor" href="#data-availability"></a>
+<h2 id="explore-more">Explore More<a class="anchor" aria-label="anchor" href="#explore-more"></a>
 </h2>
-<div class="section level3">
-<h3 id="enrollment-data">Enrollment Data<a class="anchor" aria-label="anchor" href="#enrollment-data"></a>
-</h3>
-<table class="table">
-<colgroup>
-<col width="25%">
-<col width="48%">
-<col width="25%">
-</colgroup>
-<thead><tr class="header">
-<th>Years</th>
-<th>Demographics</th>
-<th>Notes</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><strong>2006, 2010, 2015</strong></td>
-<td>Total enrollment only</td>
-<td>No demographic breakdowns cached</td>
-</tr>
-<tr class="even">
-<td><strong>2018-2021</strong></td>
-<td>12 subgroups</td>
-<td>Race, gender, special_ed, lep</td>
-</tr>
-<tr class="odd">
-<td><strong>2024</strong></td>
-<td>13 subgroups</td>
-<td>Adds econ_disadv</td>
-</tr>
-<tr class="even">
-<td><strong>2022-2023</strong></td>
-<td>Not cached</td>
-<td>NC DPI API requires session; these years fail to download</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="whats-included">What’s included<a class="anchor" aria-label="anchor" href="#whats-included"></a>
-</h3>
-<ul>
-<li>
-<strong>Levels:</strong> State, LEA (~115 districts), school (~2,700), charter (~219)</li>
-<li>
-<strong>Demographics (2018+):</strong> White, Black, Hispanic, Asian, Native American, Pacific Islander, Multiracial</li>
-<li>
-<strong>Special populations (2018+):</strong> Special Education, English Learners (LEP)</li>
-<li>
-<strong>Economic status (2024):</strong> Economically Disadvantaged</li>
-<li>
-<strong>Gender (2018+):</strong> Male, Female</li>
-<li>
-<strong>Grade levels:</strong> K, 01-08, TOTAL</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="notable-lea-codes">Notable LEA codes<a class="anchor" aria-label="anchor" href="#notable-lea-codes"></a>
-</h3>
-<table class="table">
-<thead><tr class="header">
-<th>Code</th>
-<th>District Name</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>920</td>
-<td>Wake County Schools</td>
-</tr>
-<tr class="even">
-<td>600</td>
-<td>Charlotte-Mecklenburg Schools</td>
-</tr>
-<tr class="odd">
-<td>410</td>
-<td>Guilford County Schools</td>
-</tr>
-<tr class="even">
-<td>340</td>
-<td>Winston Salem / Forsyth County Schools</td>
-</tr>
-<tr class="odd">
-<td>260</td>
-<td>Cumberland County Schools</td>
-</tr>
-<tr class="even">
-<td>320</td>
-<td>Durham Public Schools</td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>Full analysis with 15 stories: - <a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html">Enrollment trends</a> – 15 stories - <a href="https://almartin82.github.io/ncschooldata/reference/">Function reference</a></p>
 </div>
 <div class="section level2">
 <h2 id="data-notes">Data Notes<a class="anchor" aria-label="anchor" href="#data-notes"></a>
@@ -758,20 +369,382 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="part-of-the-state-schooldata-project">Part of the State Schooldata Project<a class="anchor" aria-label="anchor" href="#part-of-the-state-schooldata-project"></a>
+<h2 id="deeper-dive">Deeper Dive<a class="anchor" aria-label="anchor" href="#deeper-dive"></a>
 </h2>
-<p>A simple, consistent interface for accessing state-published school data in Python and R.</p>
-<p><strong>All 50 state packages:</strong> <a href="https://github.com/almartin82?tab=repositories&amp;q=schooldata" class="external-link">github.com/almartin82</a></p>
+<div class="section level3">
+<h3 id="id_4-north-carolinas-15-million-students-peaked-in-2019--covid-erased-a-decade-of-growth">4. North Carolina’s 1.5 million students peaked in 2019 – COVID erased a decade of growth<a class="anchor" aria-label="anchor" href="#id_4-north-carolinas-15-million-students-peaked-in-2019--covid-erased-a-decade-of-growth"></a>
+</h3>
+<p>NC grew steadily from 1.39M to 1.54M, then lost 66,000 students by 2021. Recovery is underway but the state is still 27K below its 2019 peak.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2006</span>, <span class="fl">2010</span>, <span class="fl">2015</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">statewide</span> <span class="op">&lt;-</span> <span class="va">enr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">statewide</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">statewide</span></span>
+<span><span class="co">#&gt; # A tibble: 5 x 2</span></span>
+<span><span class="co">#&gt;   end_year n_students</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt;      &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2006    1390168</span></span>
+<span><span class="co">#&gt; 2     2010    1440212</span></span>
+<span><span class="co">#&gt; 3     2015    1502009</span></span>
+<span><span class="co">#&gt; 4     2020    1525592</span></span>
+<span><span class="co">#&gt; 5     2024    1508194</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/statewide-chart-1.png" alt="NC statewide enrollment"><div class="figcaption">NC statewide enrollment</div>
 </div>
-<div class="section level2">
-<h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a>
-</h2>
-<p><a href="https://github.com/almartin82" class="external-link">Andy Martin</a> (<a href="mailto:almartin@gmail.com" class="email">almartin@gmail.com</a>)</p>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#north-carolinas-1.5-million-students-peaked-in-2019----covid-erased-a-decade-of-growth">(source)</a></p>
 </div>
-<div class="section level2">
-<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
-</h2>
-<p>MIT</p>
+<div class="section level3">
+<h3 id="id_5-wake-county-160000-students-and-bigger-than-many-states">5. Wake County: 160,000 students and bigger than many states<a class="anchor" aria-label="anchor" href="#id_5-wake-county-160000-students-and-bigger-than-many-states"></a>
+</h3>
+<p>Wake County Schools is the largest district in NC, with nearly 160,000 students. Charlotte-Mecklenburg follows at 140,000.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_2024</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr.html">fetch_enr</a></span><span class="op">(</span><span class="fl">2024</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">top_districts</span> <span class="op">&lt;-</span> <span class="va">enr_2024</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">top_districts</span><span class="op">)</span> <span class="op">==</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">top_districts</span></span>
+<span><span class="co">#&gt; # A tibble: 10 x 2</span></span>
+<span><span class="co">#&gt;    district_name                          n_students</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;                                       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 Wake County Schools                        159675</span></span>
+<span><span class="co">#&gt;  2 Charlotte-Mecklenburg Schools              140415</span></span>
+<span><span class="co">#&gt;  3 Guilford County Schools                     65879</span></span>
+<span><span class="co">#&gt;  4 Winston Salem / Forsyth County Schools      50842</span></span>
+<span><span class="co">#&gt;  5 Cumberland County Schools                   47871</span></span>
+<span><span class="co">#&gt;  6 Union County Public Schools                 41378</span></span>
+<span><span class="co">#&gt;  7 Johnston County Public Schools              36745</span></span>
+<span><span class="co">#&gt;  8 Cabarrus County Schools                     34919</span></span>
+<span><span class="co">#&gt;  9 Durham Public Schools                       30783</span></span>
+<span><span class="co">#&gt; 10 Gaston County Schools                       29714</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/top-districts-chart-1.png" alt="Top NC districts"><div class="figcaption">Top NC districts</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#wake-county-160000-students-and-bigger-than-many-states">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_6-white-students-dropped-from-47-to-43-while-hispanic-enrollment-surged">6. White students dropped from 47% to 43% while Hispanic enrollment surged<a class="anchor" aria-label="anchor" href="#id_6-white-students-dropped-from-47-to-43-while-hispanic-enrollment-surged"></a>
+</h3>
+<p>Between 2018 and 2024, white enrollment fell by 106,000 students while Hispanic enrollment grew by 57,000. North Carolina is becoming a majority-minority school system.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_demo</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2019</span>, <span class="fl">2020</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="va">enr_demo</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"black"</span>, <span class="st">"hispanic"</span>, <span class="st">"asian"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">subgroup</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>subgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">subgroup</span>,</span>
+<span>    levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"black"</span>, <span class="st">"hispanic"</span>, <span class="st">"asian"</span><span class="op">)</span>,</span>
+<span>    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"White"</span>, <span class="st">"Black"</span>, <span class="st">"Hispanic"</span>, <span class="st">"Asian"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">demographics</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">demographics</span></span>
+<span><span class="co">#&gt; # A tibble: 20 x 3</span></span>
+<span><span class="co">#&gt;    end_year subgroup n_students</span></span>
+<span><span class="co">#&gt;       &lt;dbl&gt; &lt;fct&gt;         &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1     2018 Asian         51706</span></span>
+<span><span class="co">#&gt;  2     2018 Black        393618</span></span>
+<span><span class="co">#&gt;  3     2018 Hispanic     271304</span></span>
+<span><span class="co">#&gt;  4     2018 White        749498</span></span>
+<span><span class="co">#&gt;  5     2019 Asian         54349</span></span>
+<span><span class="co">#&gt;  6     2019 Black        394222</span></span>
+<span><span class="co">#&gt;  7     2019 Hispanic     282328</span></span>
+<span><span class="co">#&gt;  8     2019 White        746767</span></span>
+<span><span class="co">#&gt;  9     2020 Asian         55582</span></span>
+<span><span class="co">#&gt; 10     2020 Black        382563</span></span>
+<span><span class="co">#&gt; 11     2020 Hispanic     292782</span></span>
+<span><span class="co">#&gt; 12     2020 White        722929</span></span>
+<span><span class="co">#&gt; 13     2021 Asian         56197</span></span>
+<span><span class="co">#&gt; 14     2021 Black        373647</span></span>
+<span><span class="co">#&gt; 15     2021 Hispanic     285867</span></span>
+<span><span class="co">#&gt; 16     2021 White        687491</span></span>
+<span><span class="co">#&gt; 17     2024 Asian         64402</span></span>
+<span><span class="co">#&gt; 18     2024 Black        369522</span></span>
+<span><span class="co">#&gt; 19     2024 Hispanic     328041</span></span>
+<span><span class="co">#&gt; 20     2024 White        643051</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/demographics-chart-1.png" alt="NC demographics"><div class="figcaption">NC demographics</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#white-students-dropped-from-47-to-43-while-hispanic-enrollment-surged">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_7-charlotte-mecklenburg-lost-10000-students-during-covid-then-partially-recovered">7. Charlotte-Mecklenburg lost 10,000 students during COVID then partially recovered<a class="anchor" aria-label="anchor" href="#id_7-charlotte-mecklenburg-lost-10000-students-during-covid-then-partially-recovered"></a>
+</h3>
+<p>CMS dropped from 147,600 in 2019 to 137,600 in 2021 – a staggering 10,000-student loss. By 2024 it has clawed back to 140,400 but remains 7,200 below its peak.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_cms</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2019</span>, <span class="fl">2020</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cms_trend</span> <span class="op">&lt;-</span> <span class="va">enr_cms</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Charlotte-Mecklenburg"</span>, <span class="va">district_name</span><span class="op">)</span>,</span>
+<span>         <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>change <span class="op">=</span> <span class="va">n_students</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cms_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">cms_trend</span></span>
+<span><span class="co">#&gt; # A tibble: 5 x 4</span></span>
+<span><span class="co">#&gt;   end_year district_name                 n_students change</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;                              &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2018 Charlotte-Mecklenburg Schools     146693     NA</span></span>
+<span><span class="co">#&gt; 2     2019 Charlotte-Mecklenburg Schools     147639    946</span></span>
+<span><span class="co">#&gt; 3     2020 Charlotte-Mecklenburg Schools     146255  -1384</span></span>
+<span><span class="co">#&gt; 4     2021 Charlotte-Mecklenburg Schools     137578  -8677</span></span>
+<span><span class="co">#&gt; 5     2024 Charlotte-Mecklenburg Schools     140415   2837</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/cms-chart-1.png" alt="CMS enrollment"><div class="figcaption">CMS enrollment</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#charlotte-mecklenburg-lost-10000-students-during-covid-then-partially-recovered">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_8-half-of-nc-students-are-economically-disadvantaged">8. Half of NC students are economically disadvantaged<a class="anchor" aria-label="anchor" href="#id_8-half-of-nc-students-are-economically-disadvantaged"></a>
+</h3>
+<p>757,944 students – 50.3% of the state – qualify as economically disadvantaged. This is the first year econ_disadv data is available in the package.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">econ_data</span> <span class="op">&lt;-</span> <span class="va">enr_2024</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"total_enrollment"</span>, <span class="st">"econ_disadv"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">subgroup</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">n_students</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">econ_data</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">econ_data</span></span>
+<span><span class="co">#&gt; # A tibble: 2 x 3</span></span>
+<span><span class="co">#&gt;   subgroup         n_students   pct</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                 &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 total_enrollment    1508194 100</span></span>
+<span><span class="co">#&gt; 2 econ_disadv          757944  50.3</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/econ-disadv-chart-1.png" alt="Econ disadvantaged"><div class="figcaption">Econ disadvantaged</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#half-of-nc-students-are-economically-disadvantaged">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_9-english-learners-grew-42-in-six-years">9. English Learners grew 42% in six years<a class="anchor" aria-label="anchor" href="#id_9-english-learners-grew-42-in-six-years"></a>
+</h3>
+<p>From 118,569 in 2018 to 168,383 in 2024, NC schools added nearly 50,000 English Learners. LEP students now make up 11.2% of total enrollment.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_lep</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2019</span>, <span class="fl">2020</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">lep_trend</span> <span class="op">&lt;-</span> <span class="va">enr_lep</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"lep"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pct_change <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">n_students</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nth.html" class="external-link">first</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">lep_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">lep_trend</span></span>
+<span><span class="co">#&gt; # A tibble: 5 x 3</span></span>
+<span><span class="co">#&gt;   end_year n_students pct_change</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2018     118569        0</span></span>
+<span><span class="co">#&gt; 2     2019     127843        7.8</span></span>
+<span><span class="co">#&gt; 3     2020     126240        6.5</span></span>
+<span><span class="co">#&gt; 4     2021     131322       10.8</span></span>
+<span><span class="co">#&gt; 5     2024     168383       42</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/lep-chart-1.png" alt="English Learners trend"><div class="figcaption">English Learners trend</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#english-learners-grew-42-in-six-years">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_10-wake-county-grew-33-since-2006-but-may-have-peaked">10. Wake County grew 33% since 2006 but may have peaked<a class="anchor" aria-label="anchor" href="#id_10-wake-county-grew-33-since-2006-but-may-have-peaked"></a>
+</h3>
+<p>Wake County added nearly 40,000 students from 2006 to 2020, then dipped slightly by 2024. After years of relentless growth, has the Research Triangle’s anchor district plateaued?</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_wake</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2006</span>, <span class="fl">2010</span>, <span class="fl">2015</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wake_trend</span> <span class="op">&lt;-</span> <span class="va">enr_wake</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Wake"</span>, <span class="va">district_name</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>change <span class="op">=</span> <span class="va">n_students</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lag</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">wake_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">wake_trend</span></span>
+<span><span class="co">#&gt; # A tibble: 5 x 4</span></span>
+<span><span class="co">#&gt;   end_year district_name       n_students change</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;                    &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2006 Wake County Schools     120367     NA</span></span>
+<span><span class="co">#&gt; 2     2010 Wake County Schools     139064  18697</span></span>
+<span><span class="co">#&gt; 3     2015 Wake County Schools     153488  14424</span></span>
+<span><span class="co">#&gt; 4     2020 Wake County Schools     160622   7134</span></span>
+<span><span class="co">#&gt; 5     2024 Wake County Schools     159675   -947</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/wake-chart-1.png" alt="Wake County growth"><div class="figcaption">Wake County growth</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#wake-county-grew-33-since-2006-but-may-have-peaked">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_11-the-coast-is-growing-while-the-piedmont-shrinks">11. The coast is growing while the Piedmont shrinks<a class="anchor" aria-label="anchor" href="#id_11-the-coast-is-growing-while-the-piedmont-shrinks"></a>
+</h3>
+<p>Coastal counties (New Hanover, Brunswick, Pender) gained students while Piedmont cities (Guilford, Forsyth, Alamance) lost nearly 9,000 since 2015.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_regional</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">coastal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"New Hanover"</span>, <span class="st">"Brunswick"</span>, <span class="st">"Pender"</span><span class="op">)</span></span>
+<span><span class="va">piedmont</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Guilford"</span>, <span class="st">"Forsyth"</span>, <span class="st">"Alamance"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">regional</span> <span class="op">&lt;-</span> <span class="va">enr_regional</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">coastal</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Coast"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">piedmont</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Piedmont"</span>,</span>
+<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coast"</span>, <span class="st">"Piedmont"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">region</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">regional</span><span class="op">)</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">regional</span></span>
+<span><span class="co">#&gt; # A tibble: 4 x 3</span></span>
+<span><span class="co">#&gt;   end_year region    total</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2015 Coast     46807</span></span>
+<span><span class="co">#&gt; 2     2015 Piedmont 147754</span></span>
+<span><span class="co">#&gt; 3     2024 Coast     48559</span></span>
+<span><span class="co">#&gt; 4     2024 Piedmont 138801</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/regional-chart-1.png" alt="Coast vs Piedmont"><div class="figcaption">Coast vs Piedmont</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#the-coast-is-growing-while-the-piedmont-shrinks">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_12-union-county-grew-32-since-2006-on-charlotte-suburban-boom">12. Union County grew 32% since 2006 on Charlotte suburban boom<a class="anchor" aria-label="anchor" href="#id_12-union-county-grew-32-since-2006-on-charlotte-suburban-boom"></a>
+</h3>
+<p>Union County Public Schools went from 31,330 to 41,378 students. Weddington, Waxhaw, and Indian Trail fueled the growth, though the pace has slowed since 2015.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_union</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2006</span>, <span class="fl">2010</span>, <span class="fl">2015</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">union_trend</span> <span class="op">&lt;-</span> <span class="va">enr_union</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Union"</span>, <span class="va">district_name</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">district_name</span>, <span class="va">n_students</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">union_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">union_trend</span></span>
+<span><span class="co">#&gt; # A tibble: 5 x 3</span></span>
+<span><span class="co">#&gt;   end_year district_name               n_students</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;                            &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2006 Union County Public Schools      31330</span></span>
+<span><span class="co">#&gt; 2     2010 Union County Public Schools      38282</span></span>
+<span><span class="co">#&gt; 3     2015 Union County Public Schools      41296</span></span>
+<span><span class="co">#&gt; 4     2020 Union County Public Schools      41452</span></span>
+<span><span class="co">#&gt; 5     2024 Union County Public Schools      41378</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/union-growth-chart-1.png" alt="Union County growth"><div class="figcaption">Union County growth</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#union-county-grew-32-since-2006-on-charlotte-suburban-boom">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_13-asheville-area-mountain-counties-lost-10-of-students">13. Asheville-area mountain counties lost 10% of students<a class="anchor" aria-label="anchor" href="#id_13-asheville-area-mountain-counties-lost-10-of-students"></a>
+</h3>
+<p>Seven mountain counties around Asheville (Buncombe, Henderson, Haywood, Madison, Transylvania, Yancey, Mitchell) dropped from 55,623 to 49,817 students since 2015.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_mountain</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mountain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Buncombe"</span>, <span class="st">"Henderson"</span>, <span class="st">"Haywood"</span>, <span class="st">"Madison"</span>,</span>
+<span>              <span class="st">"Transylvania"</span>, <span class="st">"Yancey"</span>, <span class="st">"Mitchell"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mountain_data</span> <span class="op">&lt;-</span> <span class="va">enr_mountain</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>is_mountain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">mountain</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_mountain</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
+<span>    total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    n_districts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">mountain_data</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">mountain_data</span></span>
+<span><span class="co">#&gt; # A tibble: 2 x 3</span></span>
+<span><span class="co">#&gt;   end_year total n_districts</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt; &lt;dbl&gt;       &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1     2015 55623           7</span></span>
+<span><span class="co">#&gt; 2     2024 49817           7</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/mountain-chart-1.png" alt="Mountain counties"><div class="figcaption">Mountain counties</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#asheville-area-mountain-counties-lost-10-of-students">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_14-special-education-holds-steady-at-13-14-of-enrollment">14. Special education holds steady at 13-14% of enrollment<a class="anchor" aria-label="anchor" href="#id_14-special-education-holds-steady-at-13-14-of-enrollment"></a>
+</h3>
+<p>NC’s special education population has been remarkably stable at around 13-14% of total enrollment since 2018, even as overall enrollment fluctuated with COVID.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_sped</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2018</span>, <span class="fl">2019</span>, <span class="fl">2020</span>, <span class="fl">2021</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sped_trend</span> <span class="op">&lt;-</span> <span class="va">enr_sped</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_state</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span>,</span>
+<span>         <span class="va">subgroup</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"total_enrollment"</span>, <span class="st">"special_ed"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">subgroup</span>, <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">subgroup</span>, values_from <span class="op">=</span> <span class="va">n_students</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    pct_sped <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">special_ed</span> <span class="op">/</span> <span class="va">total_enrollment</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    sped_change <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">special_ed</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nth.html" class="external-link">first</a></span><span class="op">(</span><span class="va">special_ed</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sped_trend</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">sped_trend</span></span>
+<span><span class="co">#&gt; # A tibble: 5 x 5</span></span>
+<span><span class="co">#&gt;   end_year total_enrollment special_ed pct_sped sped_change</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt;            &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2018          1521108     208352     13.7         0</span></span>
+<span><span class="co">#&gt; 2     2019          1535687     211629     13.8         1.6</span></span>
+<span><span class="co">#&gt; 3     2020          1525592     209750     13.7         0.7</span></span>
+<span><span class="co">#&gt; 4     2021          1469401     204434     13.9        -1.9</span></span>
+<span><span class="co">#&gt; 5     2024          1508194     202380     13.4        -2.9</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/sped-chart-1.png" alt="Special ed trend"><div class="figcaption">Special ed trend</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#special-education-holds-steady-at-13-14-of-enrollment">(source)</a></p>
+</div>
+<div class="section level3">
+<h3 id="id_15-triangle-vs-triad-diverging-metro-areas">15. Triangle vs Triad: diverging metro areas<a class="anchor" aria-label="anchor" href="#id_15-triangle-vs-triad-diverging-metro-areas"></a>
+</h3>
+<p>The Research Triangle (Wake, Durham, Orange, Johnston, Chatham) grew from 237K to 243K while the Piedmont Triad (Guilford, Forsyth, Davidson, Randolph, Alamance) shrank from 185K to 171K since 2015.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">enr_metro</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_enr_multi.html">fetch_enr_multi</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">2020</span>, <span class="fl">2024</span><span class="op">)</span>, use_cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">triangle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Wake"</span>, <span class="st">"Durham"</span>, <span class="st">"Orange"</span>, <span class="st">"Johnston"</span>, <span class="st">"Chatham"</span><span class="op">)</span></span>
+<span><span class="va">triad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Guilford"</span>, <span class="st">"Forsyth"</span>, <span class="st">"Davidson"</span>, <span class="st">"Randolph"</span>, <span class="st">"Alamance"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">metro_data</span> <span class="op">&lt;-</span> <span class="va">enr_metro</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">is_district</span>, <span class="va">subgroup</span> <span class="op">==</span> <span class="st">"total_enrollment"</span>, <span class="va">grade_level</span> <span class="op">==</span> <span class="st">"TOTAL"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">triangle</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Triangle"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">triad</span>, collapse <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span>, <span class="va">district_name</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Triad"</span>,</span>
+<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"Other"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">region</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Triangle"</span>, <span class="st">"Triad"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">end_year</span>, <span class="va">region</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n_students</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">metro_data</span><span class="op">)</span> <span class="op">==</span> <span class="fl">6</span><span class="op">)</span></span>
+<span><span class="va">metro_data</span></span>
+<span><span class="co">#&gt; # A tibble: 6 x 3</span></span>
+<span><span class="co">#&gt;   end_year region    total</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1     2015 Triad    184979</span></span>
+<span><span class="co">#&gt; 2     2015 Triangle 236723</span></span>
+<span><span class="co">#&gt; 3     2020 Triad    181208</span></span>
+<span><span class="co">#&gt; 4     2020 Triangle 246320</span></span>
+<span><span class="co">#&gt; 5     2024 Triad    171352</span></span>
+<span><span class="co">#&gt; 6     2024 Triangle 243012</span></span></code></pre></div>
+<div class="float">
+<img src="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/triangle-triad-chart-1.png" alt="Triangle vs Triad"><div class="figcaption">Triangle vs Triad</div>
+</div>
+<p><a href="https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#triangle-vs-triad-diverging-metro-areas">(source)</a></p>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

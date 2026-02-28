@@ -1,192 +1,34 @@
 # ncschooldata
 
-**[Documentation](https://almartin82.github.io/ncschooldata/)** \|
-**[Getting
-Started](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html)**
+North Carolina educates 1.5 million students across 115 traditional
+districts and 219 charter schools – and the demographic, geographic, and
+sector shifts hiding in the data are dramatic.
 
-Part of the [State Schooldata
-Project](https://github.com/almartin82/njschooldata) - fetching and
-analyzing state-published school data in R and Python. The original
-[njschooldata](https://github.com/almartin82/njschooldata) package for
-New Jersey inspired this family of 50 state packages.
+Part of the [njschooldata](https://github.com/almartin82/njschooldata)
+family of state education data packages.
 
-Fetch and analyze North Carolina school enrollment data from the NC
-Department of Public Instruction in R or Python. 1.5 million students
-across 115 traditional districts and 219 charter schools, with data from
-2006 to 2024.
+**[Full documentation](https://almartin82.github.io/ncschooldata/)** –
+all 15 stories with interactive charts, getting-started guide, and
+complete function reference.
 
-## What can you find with ncschooldata?
-
-Here are fifteen stories hiding in the numbers:
-
-------------------------------------------------------------------------
-
-### 1. North Carolina’s 1.5 million students peaked in 2019 – COVID erased a decade of growth
-
-NC grew steadily from 1.39M to 1.54M, then lost 66,000 students by 2021.
-Recovery is underway but the state is still 27K below its 2019 peak.
+## Highlights
 
 ``` r
 library(ncschooldata)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-
-enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
-
-statewide <- enr %>%
-  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  select(end_year, n_students)
-
-stopifnot(nrow(statewide) > 0)
-statewide
-#> # A tibble: 5 x 2
-#>   end_year n_students
-#>      <dbl>      <dbl>
-#> 1     2006    1390168
-#> 2     2010    1440212
-#> 3     2015    1502009
-#> 4     2020    1525592
-#> 5     2024    1508194
 ```
 
-![NC statewide
-enrollment](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/statewide-chart-1.png)
-
-NC statewide enrollment
-
-------------------------------------------------------------------------
-
-### 2. Wake County: 160,000 students and bigger than many states
-
-Wake County Schools is the largest district in NC, with nearly 160,000
-students. Charlotte-Mecklenburg follows at 140,000.
-
-``` r
-enr_2024 <- fetch_enr(2024, use_cache = TRUE)
-
-top_districts <- enr_2024 %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  arrange(desc(n_students)) %>%
-  head(10) %>%
-  select(district_name, n_students)
-
-stopifnot(nrow(top_districts) == 10)
-top_districts
-#> # A tibble: 10 x 2
-#>    district_name                          n_students
-#>    <chr>                                       <dbl>
-#>  1 Wake County Schools                        159675
-#>  2 Charlotte-Mecklenburg Schools              140415
-#>  3 Guilford County Schools                     65879
-#>  4 Winston Salem / Forsyth County Schools      50842
-#>  5 Cumberland County Schools                   47871
-#>  6 Union County Public Schools                 41378
-#>  7 Johnston County Public Schools              36745
-#>  8 Cabarrus County Schools                     34919
-#>  9 Durham Public Schools                       30783
-#> 10 Gaston County Schools                       29714
-```
-
-![Top NC
-districts](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/top-districts-chart-1.png)
-
-Top NC districts
-
-------------------------------------------------------------------------
-
-### 3. White students dropped from 47% to 43% while Hispanic enrollment surged
-
-Between 2018 and 2024, white enrollment fell by 106,000 students while
-Hispanic enrollment grew by 57,000. North Carolina is becoming a
-majority-minority school system.
-
-``` r
-enr_demo <- fetch_enr_multi(c(2018, 2019, 2020, 2021, 2024), use_cache = TRUE)
-
-demographics <- enr_demo %>%
-  filter(is_state, grade_level == "TOTAL",
-         subgroup %in% c("white", "black", "hispanic", "asian")) %>%
-  select(end_year, subgroup, n_students) %>%
-  mutate(subgroup = factor(subgroup,
-    levels = c("white", "black", "hispanic", "asian"),
-    labels = c("White", "Black", "Hispanic", "Asian")))
-
-stopifnot(nrow(demographics) > 0)
-demographics
-#> # A tibble: 20 x 3
-#>    end_year subgroup n_students
-#>       <dbl> <fct>         <dbl>
-#>  1     2018 Asian         51706
-#>  2     2018 Black        393618
-#>  3     2018 Hispanic     271304
-#>  4     2018 White        749498
-#>  5     2019 Asian         54349
-#>  6     2019 Black        394222
-#>  7     2019 Hispanic     282328
-#>  8     2019 White        746767
-#>  9     2020 Asian         55582
-#> 10     2020 Black        382563
-#> 11     2020 Hispanic     292782
-#> 12     2020 White        722929
-#> 13     2021 Asian         56197
-#> 14     2021 Black        373647
-#> 15     2021 Hispanic     285867
-#> 16     2021 White        687491
-#> 17     2024 Asian         64402
-#> 18     2024 Black        369522
-#> 19     2024 Hispanic     328041
-#> 20     2024 White        643051
-```
-
-![NC
-demographics](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/demographics-chart-1.png)
-
-NC demographics
-
-------------------------------------------------------------------------
-
-### 4. Charlotte-Mecklenburg lost 10,000 students during COVID then partially recovered
-
-CMS dropped from 147,600 in 2019 to 137,600 in 2021 – a staggering
-10,000-student loss. By 2024 it has clawed back to 140,400 but remains
-7,200 below its peak.
-
-``` r
-enr_cms <- fetch_enr_multi(c(2018, 2019, 2020, 2021, 2024), use_cache = TRUE)
-
-cms_trend <- enr_cms %>%
-  filter(is_district, grepl("Charlotte-Mecklenburg", district_name),
-         subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  select(end_year, district_name, n_students) %>%
-  mutate(change = n_students - lag(n_students))
-
-stopifnot(nrow(cms_trend) > 0)
-cms_trend
-#> # A tibble: 5 x 4
-#>   end_year district_name                 n_students change
-#>      <dbl> <chr>                              <dbl>  <dbl>
-#> 1     2018 Charlotte-Mecklenburg Schools     146693     NA
-#> 2     2019 Charlotte-Mecklenburg Schools     147639    946
-#> 3     2020 Charlotte-Mecklenburg Schools     146255  -1384
-#> 4     2021 Charlotte-Mecklenburg Schools     137578  -8677
-#> 5     2024 Charlotte-Mecklenburg Schools     140415   2837
-```
-
-![CMS
-enrollment](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/cms-chart-1.png)
-
-CMS enrollment
-
-------------------------------------------------------------------------
-
-### 5. Charter schools grew from 26,000 to 144,000 students in 18 years
+### 1. Charter schools grew from 26,000 to 144,000 students in 18 years
 
 North Carolina’s charter sector has exploded. In 2006, 99 charter
 schools served 26,000 students. By 2024, 219 charters serve 144,000 –
 nearly 10% of all students.
 
 ``` r
+enr_2024 <- fetch_enr(2024, use_cache = TRUE)
+
 charter_summary <- enr_2024 %>%
   filter(is_campus, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
   group_by(is_charter) %>%
@@ -217,38 +59,9 @@ enrollment](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_
 
 Charter enrollment
 
-------------------------------------------------------------------------
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#charter-schools-grew-from-26000-to-144000-students-in-18-years)
 
-### 6. Half of NC students are economically disadvantaged
-
-757,944 students – 50.3% of the state – qualify as economically
-disadvantaged. This is the first year econ_disadv data is available in
-the package.
-
-``` r
-econ_data <- enr_2024 %>%
-  filter(is_state, grade_level == "TOTAL",
-         subgroup %in% c("total_enrollment", "econ_disadv")) %>%
-  select(subgroup, n_students) %>%
-  mutate(pct = round(n_students / max(n_students) * 100, 1))
-
-stopifnot(nrow(econ_data) == 2)
-econ_data
-#> # A tibble: 2 x 3
-#>   subgroup         n_students   pct
-#>   <chr>                 <dbl> <dbl>
-#> 1 total_enrollment    1508194 100
-#> 2 econ_disadv          757944  50.3
-```
-
-![Econ
-disadvantaged](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/econ-disadv-chart-1.png)
-
-Econ disadvantaged
-
-------------------------------------------------------------------------
-
-### 7. Durham is nearly a 50/50 Black-Hispanic district
+### 2. Durham is nearly a 50/50 Black-Hispanic district
 
 In 2018 Durham was 46% Black and 32% Hispanic. By 2024 the gap closed to
 39% Black and 38% Hispanic. The crossover is imminent.
@@ -291,116 +104,9 @@ demographics](https://almartin82.github.io/ncschooldata/articles/enrollment_hook
 
 Durham demographics
 
-------------------------------------------------------------------------
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#durham-is-nearly-a-5050-black-hispanic-district)
 
-### 8. English Learners grew 42% in six years
-
-From 118,569 in 2018 to 168,383 in 2024, NC schools added nearly 50,000
-English Learners. LEP students now make up 11.2% of total enrollment.
-
-``` r
-enr_lep <- fetch_enr_multi(c(2018, 2019, 2020, 2021, 2024), use_cache = TRUE)
-
-lep_trend <- enr_lep %>%
-  filter(is_state, grade_level == "TOTAL", subgroup == "lep") %>%
-  select(end_year, n_students) %>%
-  mutate(pct_change = round((n_students / first(n_students) - 1) * 100, 1))
-
-stopifnot(nrow(lep_trend) > 0)
-lep_trend
-#> # A tibble: 5 x 3
-#>   end_year n_students pct_change
-#>      <dbl>      <dbl>      <dbl>
-#> 1     2018     118569        0
-#> 2     2019     127843        7.8
-#> 3     2020     126240        6.5
-#> 4     2021     131322       10.8
-#> 5     2024     168383       42
-```
-
-![English Learners
-trend](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/lep-chart-1.png)
-
-English Learners trend
-
-------------------------------------------------------------------------
-
-### 9. Wake County grew 33% since 2006 but may have peaked
-
-Wake County added nearly 40,000 students from 2006 to 2020, then dipped
-slightly by 2024. After years of relentless growth, has the Research
-Triangle’s anchor district plateaued?
-
-``` r
-enr_wake <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
-
-wake_trend <- enr_wake %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
-         grepl("Wake", district_name)) %>%
-  select(end_year, district_name, n_students) %>%
-  mutate(change = n_students - lag(n_students))
-
-stopifnot(nrow(wake_trend) > 0)
-wake_trend
-#> # A tibble: 5 x 4
-#>   end_year district_name       n_students change
-#>      <dbl> <chr>                    <dbl>  <dbl>
-#> 1     2006 Wake County Schools     120367     NA
-#> 2     2010 Wake County Schools     139064  18697
-#> 3     2015 Wake County Schools     153488  14424
-#> 4     2020 Wake County Schools     160622   7134
-#> 5     2024 Wake County Schools     159675   -947
-```
-
-![Wake County
-growth](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/wake-chart-1.png)
-
-Wake County growth
-
-------------------------------------------------------------------------
-
-### 10. The coast is growing while the Piedmont shrinks
-
-Coastal counties (New Hanover, Brunswick, Pender) gained students while
-Piedmont cities (Guilford, Forsyth, Alamance) lost nearly 9,000 since
-2015.
-
-``` r
-enr_regional <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
-
-coastal <- c("New Hanover", "Brunswick", "Pender")
-piedmont <- c("Guilford", "Forsyth", "Alamance")
-
-regional <- enr_regional %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  mutate(region = case_when(
-    grepl(paste(coastal, collapse = "|"), district_name) ~ "Coast",
-    grepl(paste(piedmont, collapse = "|"), district_name) ~ "Piedmont",
-    TRUE ~ "Other"
-  )) %>%
-  filter(region %in% c("Coast", "Piedmont")) %>%
-  group_by(end_year, region) %>%
-  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
-
-stopifnot(nrow(regional) == 4)
-regional
-#> # A tibble: 4 x 3
-#>   end_year region    total
-#>      <dbl> <chr>     <dbl>
-#> 1     2015 Coast     46807
-#> 2     2015 Piedmont 147754
-#> 3     2024 Coast     48559
-#> 4     2024 Piedmont 138801
-```
-
-![Coast vs
-Piedmont](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/regional-chart-1.png)
-
-Coast vs Piedmont
-
-------------------------------------------------------------------------
-
-### 11. Rural eastern NC lost 25% of its students since 2015
+### 3. Rural eastern NC lost 25% of its students since 2015
 
 Eight tobacco belt counties (Edgecombe, Halifax, Hertford, Northampton,
 Bertie, Martin, Washington, Tyrrell) dropped from 21,596 to 16,219
@@ -434,173 +140,33 @@ decline](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_fil
 
 Eastern NC decline
 
-------------------------------------------------------------------------
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#rural-eastern-nc-lost-25-of-its-students-since-2015)
 
-### 12. Union County grew 32% since 2006 on Charlotte suburban boom
+## Data Taxonomy
 
-Union County Public Schools went from 31,330 to 41,378 students.
-Weddington, Waxhaw, and Indian Trail fueled the growth, though the pace
-has slowed since 2015.
+| Category           | Years     | Function                                                                                                                                                                                                      | Details                                                      |
+|--------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| **Enrollment**     | 2006-2024 | [`fetch_enr()`](https://almartin82.github.io/ncschooldata/reference/fetch_enr.md) / [`fetch_enr_multi()`](https://almartin82.github.io/ncschooldata/reference/fetch_enr_multi.md)                             | State, district, school. Race, gender, FRPL, SpEd, LEP       |
+| **Assessments**    | 2014-2024 | [`fetch_assessment()`](https://almartin82.github.io/ncschooldata/reference/fetch_assessment.md) / [`fetch_assessment_multi()`](https://almartin82.github.io/ncschooldata/reference/fetch_assessment_multi.md) | EOG (3-8) + EOC. State, district, school. All ESSA subgroups |
+| **Directory**      | Current   | [`fetch_directory()`](https://almartin82.github.io/ncschooldata/reference/fetch_directory.md)                                                                                                                 | School names, addresses, types                               |
+| Graduation         | —         | —                                                                                                                                                                                                             | Not yet available                                            |
+| Per-Pupil Spending | —         | —                                                                                                                                                                                                             | Not yet available                                            |
+| Accountability     | —         | —                                                                                                                                                                                                             | Not yet available                                            |
+| Chronic Absence    | —         | —                                                                                                                                                                                                             | Not yet available                                            |
+| EL Progress        | —         | —                                                                                                                                                                                                             | Not yet available                                            |
+| Special Ed         | —         | —                                                                                                                                                                                                             | Not yet available                                            |
 
-``` r
-enr_union <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
+> See the full [data category
+> taxonomy](https://almartin82.github.io/ncschooldata/DATA-CATEGORY-TAXONOMY.md)
 
-union_trend <- enr_union %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
-         grepl("Union", district_name)) %>%
-  select(end_year, district_name, n_students)
-
-stopifnot(nrow(union_trend) > 0)
-union_trend
-#> # A tibble: 5 x 3
-#>   end_year district_name               n_students
-#>      <dbl> <chr>                            <dbl>
-#> 1     2006 Union County Public Schools      31330
-#> 2     2010 Union County Public Schools      38282
-#> 3     2015 Union County Public Schools      41296
-#> 4     2020 Union County Public Schools      41452
-#> 5     2024 Union County Public Schools      41378
-```
-
-![Union County
-growth](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/union-growth-chart-1.png)
-
-Union County growth
-
-------------------------------------------------------------------------
-
-### 13. Asheville-area mountain counties lost 10% of students
-
-Seven mountain counties around Asheville (Buncombe, Henderson, Haywood,
-Madison, Transylvania, Yancey, Mitchell) dropped from 55,623 to 49,817
-students since 2015.
-
-``` r
-enr_mountain <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
-
-mountain <- c("Buncombe", "Henderson", "Haywood", "Madison",
-              "Transylvania", "Yancey", "Mitchell")
-
-mountain_data <- enr_mountain %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  mutate(is_mountain = grepl(paste(mountain, collapse = "|"), district_name)) %>%
-  filter(is_mountain) %>%
-  group_by(end_year) %>%
-  summarize(
-    total = sum(n_students, na.rm = TRUE),
-    n_districts = n(),
-    .groups = "drop"
-  )
-
-stopifnot(nrow(mountain_data) == 2)
-mountain_data
-#> # A tibble: 2 x 3
-#>   end_year total n_districts
-#>      <dbl> <dbl>       <int>
-#> 1     2015 55623           7
-#> 2     2024 49817           7
-```
-
-![Mountain
-counties](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/mountain-chart-1.png)
-
-Mountain counties
-
-------------------------------------------------------------------------
-
-### 14. Special education holds steady at 13-14% of enrollment
-
-NC’s special education population has been remarkably stable at around
-13-14% of total enrollment since 2018, even as overall enrollment
-fluctuated with COVID.
-
-``` r
-enr_sped <- fetch_enr_multi(c(2018, 2019, 2020, 2021, 2024), use_cache = TRUE)
-
-sped_trend <- enr_sped %>%
-  filter(is_state, grade_level == "TOTAL",
-         subgroup %in% c("total_enrollment", "special_ed")) %>%
-  select(end_year, subgroup, n_students) %>%
-  pivot_wider(names_from = subgroup, values_from = n_students) %>%
-  mutate(
-    pct_sped = round(special_ed / total_enrollment * 100, 1),
-    sped_change = round((special_ed / first(special_ed) - 1) * 100, 1)
-  )
-
-stopifnot(nrow(sped_trend) > 0)
-sped_trend
-#> # A tibble: 5 x 5
-#>   end_year total_enrollment special_ed pct_sped sped_change
-#>      <dbl>            <dbl>      <dbl>    <dbl>       <dbl>
-#> 1     2018          1521108     208352     13.7         0
-#> 2     2019          1535687     211629     13.8         1.6
-#> 3     2020          1525592     209750     13.7         0.7
-#> 4     2021          1469401     204434     13.9        -1.9
-#> 5     2024          1508194     202380     13.4        -2.9
-```
-
-![Special ed
-trend](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/sped-chart-1.png)
-
-Special ed trend
-
-------------------------------------------------------------------------
-
-### 15. Triangle vs Triad: diverging metro areas
-
-The Research Triangle (Wake, Durham, Orange, Johnston, Chatham) grew
-from 237K to 243K while the Piedmont Triad (Guilford, Forsyth, Davidson,
-Randolph, Alamance) shrank from 185K to 171K since 2015.
-
-``` r
-enr_metro <- fetch_enr_multi(c(2015, 2020, 2024), use_cache = TRUE)
-
-triangle <- c("Wake", "Durham", "Orange", "Johnston", "Chatham")
-triad <- c("Guilford", "Forsyth", "Davidson", "Randolph", "Alamance")
-
-metro_data <- enr_metro %>%
-  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
-  mutate(region = case_when(
-    grepl(paste(triangle, collapse = "|"), district_name) ~ "Triangle",
-    grepl(paste(triad, collapse = "|"), district_name) ~ "Triad",
-    TRUE ~ "Other"
-  )) %>%
-  filter(region %in% c("Triangle", "Triad")) %>%
-  group_by(end_year, region) %>%
-  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
-
-stopifnot(nrow(metro_data) == 6)
-metro_data
-#> # A tibble: 6 x 3
-#>   end_year region    total
-#>      <dbl> <chr>     <dbl>
-#> 1     2015 Triad    184979
-#> 2     2015 Triangle 236723
-#> 3     2020 Triad    181208
-#> 4     2020 Triangle 246320
-#> 5     2024 Triad    171352
-#> 6     2024 Triangle 243012
-```
-
-![Triangle vs
-Triad](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/triangle-triad-chart-1.png)
-
-Triangle vs Triad
-
-------------------------------------------------------------------------
-
-## Installation
-
-``` r
-# install.packages("remotes")
-remotes::install_github("almartin82/ncschooldata")
-```
-
-## Quick start
+## Quick Start
 
 ### R
 
 ``` r
+# install.packages("remotes")
+remotes::install_github("almartin82/ncschooldata")
+
 library(ncschooldata)
 library(dplyr)
 
@@ -651,41 +217,12 @@ districts = enr_2024[
 ].sort_values('n_students', ascending=False)
 ```
 
-------------------------------------------------------------------------
+## Explore More
 
-## Data availability
-
-### Enrollment Data
-
-| Years                | Demographics          | Notes                                                     |
-|----------------------|-----------------------|-----------------------------------------------------------|
-| **2006, 2010, 2015** | Total enrollment only | No demographic breakdowns cached                          |
-| **2018-2021**        | 12 subgroups          | Race, gender, special_ed, lep                             |
-| **2024**             | 13 subgroups          | Adds econ_disadv                                          |
-| **2022-2023**        | Not cached            | NC DPI API requires session; these years fail to download |
-
-### What’s included
-
-- **Levels:** State, LEA (~115 districts), school (~2,700), charter
-  (~219)
-- **Demographics (2018+):** White, Black, Hispanic, Asian, Native
-  American, Pacific Islander, Multiracial
-- **Special populations (2018+):** Special Education, English Learners
-  (LEP)
-- **Economic status (2024):** Economically Disadvantaged
-- **Gender (2018+):** Male, Female
-- **Grade levels:** K, 01-08, TOTAL
-
-### Notable LEA codes
-
-| Code | District Name                          |
-|------|----------------------------------------|
-| 920  | Wake County Schools                    |
-| 600  | Charlotte-Mecklenburg Schools          |
-| 410  | Guilford County Schools                |
-| 340  | Winston Salem / Forsyth County Schools |
-| 260  | Cumberland County Schools              |
-| 320  | Durham Public Schools                  |
+Full analysis with 15 stories: - [Enrollment
+trends](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html)
+– 15 stories - [Function
+reference](https://almartin82.github.io/ncschooldata/reference/)
 
 ## Data Notes
 
@@ -728,21 +265,450 @@ but is generally the 20th school day.
 - Historical data before 2006 uses different reporting formats
 - Some charter schools have opened/closed mid-year affecting comparisons
 
-## Part of the State Schooldata Project
+## Deeper Dive
 
-A simple, consistent interface for accessing state-published school data
-in Python and R.
+### 4. North Carolina’s 1.5 million students peaked in 2019 – COVID erased a decade of growth
 
-**All 50 state packages:**
-[github.com/almartin82](https://github.com/almartin82?tab=repositories&q=schooldata)
+NC grew steadily from 1.39M to 1.54M, then lost 66,000 students by 2021.
+Recovery is underway but the state is still 27K below its 2019 peak.
 
-## Author
+``` r
+enr <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
 
-[Andy Martin](https://github.com/almartin82) (<almartin@gmail.com>)
+statewide <- enr %>%
+  filter(is_state, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  select(end_year, n_students)
 
-## License
+stopifnot(nrow(statewide) > 0)
+statewide
+#> # A tibble: 5 x 2
+#>   end_year n_students
+#>      <dbl>      <dbl>
+#> 1     2006    1390168
+#> 2     2010    1440212
+#> 3     2015    1502009
+#> 4     2020    1525592
+#> 5     2024    1508194
+```
 
-MIT
+![NC statewide
+enrollment](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/statewide-chart-1.png)
+
+NC statewide enrollment
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#north-carolinas-1.5-million-students-peaked-in-2019----covid-erased-a-decade-of-growth)
+
+### 5. Wake County: 160,000 students and bigger than many states
+
+Wake County Schools is the largest district in NC, with nearly 160,000
+students. Charlotte-Mecklenburg follows at 140,000.
+
+``` r
+enr_2024 <- fetch_enr(2024, use_cache = TRUE)
+
+top_districts <- enr_2024 %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  arrange(desc(n_students)) %>%
+  head(10) %>%
+  select(district_name, n_students)
+
+stopifnot(nrow(top_districts) == 10)
+top_districts
+#> # A tibble: 10 x 2
+#>    district_name                          n_students
+#>    <chr>                                       <dbl>
+#>  1 Wake County Schools                        159675
+#>  2 Charlotte-Mecklenburg Schools              140415
+#>  3 Guilford County Schools                     65879
+#>  4 Winston Salem / Forsyth County Schools      50842
+#>  5 Cumberland County Schools                   47871
+#>  6 Union County Public Schools                 41378
+#>  7 Johnston County Public Schools              36745
+#>  8 Cabarrus County Schools                     34919
+#>  9 Durham Public Schools                       30783
+#> 10 Gaston County Schools                       29714
+```
+
+![Top NC
+districts](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/top-districts-chart-1.png)
+
+Top NC districts
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#wake-county-160000-students-and-bigger-than-many-states)
+
+### 6. White students dropped from 47% to 43% while Hispanic enrollment surged
+
+Between 2018 and 2024, white enrollment fell by 106,000 students while
+Hispanic enrollment grew by 57,000. North Carolina is becoming a
+majority-minority school system.
+
+``` r
+enr_demo <- fetch_enr_multi(c(2018, 2019, 2020, 2021, 2024), use_cache = TRUE)
+
+demographics <- enr_demo %>%
+  filter(is_state, grade_level == "TOTAL",
+         subgroup %in% c("white", "black", "hispanic", "asian")) %>%
+  select(end_year, subgroup, n_students) %>%
+  mutate(subgroup = factor(subgroup,
+    levels = c("white", "black", "hispanic", "asian"),
+    labels = c("White", "Black", "Hispanic", "Asian")))
+
+stopifnot(nrow(demographics) > 0)
+demographics
+#> # A tibble: 20 x 3
+#>    end_year subgroup n_students
+#>       <dbl> <fct>         <dbl>
+#>  1     2018 Asian         51706
+#>  2     2018 Black        393618
+#>  3     2018 Hispanic     271304
+#>  4     2018 White        749498
+#>  5     2019 Asian         54349
+#>  6     2019 Black        394222
+#>  7     2019 Hispanic     282328
+#>  8     2019 White        746767
+#>  9     2020 Asian         55582
+#> 10     2020 Black        382563
+#> 11     2020 Hispanic     292782
+#> 12     2020 White        722929
+#> 13     2021 Asian         56197
+#> 14     2021 Black        373647
+#> 15     2021 Hispanic     285867
+#> 16     2021 White        687491
+#> 17     2024 Asian         64402
+#> 18     2024 Black        369522
+#> 19     2024 Hispanic     328041
+#> 20     2024 White        643051
+```
+
+![NC
+demographics](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/demographics-chart-1.png)
+
+NC demographics
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#white-students-dropped-from-47-to-43-while-hispanic-enrollment-surged)
+
+### 7. Charlotte-Mecklenburg lost 10,000 students during COVID then partially recovered
+
+CMS dropped from 147,600 in 2019 to 137,600 in 2021 – a staggering
+10,000-student loss. By 2024 it has clawed back to 140,400 but remains
+7,200 below its peak.
+
+``` r
+enr_cms <- fetch_enr_multi(c(2018, 2019, 2020, 2021, 2024), use_cache = TRUE)
+
+cms_trend <- enr_cms %>%
+  filter(is_district, grepl("Charlotte-Mecklenburg", district_name),
+         subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  select(end_year, district_name, n_students) %>%
+  mutate(change = n_students - lag(n_students))
+
+stopifnot(nrow(cms_trend) > 0)
+cms_trend
+#> # A tibble: 5 x 4
+#>   end_year district_name                 n_students change
+#>      <dbl> <chr>                              <dbl>  <dbl>
+#> 1     2018 Charlotte-Mecklenburg Schools     146693     NA
+#> 2     2019 Charlotte-Mecklenburg Schools     147639    946
+#> 3     2020 Charlotte-Mecklenburg Schools     146255  -1384
+#> 4     2021 Charlotte-Mecklenburg Schools     137578  -8677
+#> 5     2024 Charlotte-Mecklenburg Schools     140415   2837
+```
+
+![CMS
+enrollment](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/cms-chart-1.png)
+
+CMS enrollment
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#charlotte-mecklenburg-lost-10000-students-during-covid-then-partially-recovered)
+
+### 8. Half of NC students are economically disadvantaged
+
+757,944 students – 50.3% of the state – qualify as economically
+disadvantaged. This is the first year econ_disadv data is available in
+the package.
+
+``` r
+econ_data <- enr_2024 %>%
+  filter(is_state, grade_level == "TOTAL",
+         subgroup %in% c("total_enrollment", "econ_disadv")) %>%
+  select(subgroup, n_students) %>%
+  mutate(pct = round(n_students / max(n_students) * 100, 1))
+
+stopifnot(nrow(econ_data) == 2)
+econ_data
+#> # A tibble: 2 x 3
+#>   subgroup         n_students   pct
+#>   <chr>                 <dbl> <dbl>
+#> 1 total_enrollment    1508194 100
+#> 2 econ_disadv          757944  50.3
+```
+
+![Econ
+disadvantaged](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/econ-disadv-chart-1.png)
+
+Econ disadvantaged
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#half-of-nc-students-are-economically-disadvantaged)
+
+### 9. English Learners grew 42% in six years
+
+From 118,569 in 2018 to 168,383 in 2024, NC schools added nearly 50,000
+English Learners. LEP students now make up 11.2% of total enrollment.
+
+``` r
+enr_lep <- fetch_enr_multi(c(2018, 2019, 2020, 2021, 2024), use_cache = TRUE)
+
+lep_trend <- enr_lep %>%
+  filter(is_state, grade_level == "TOTAL", subgroup == "lep") %>%
+  select(end_year, n_students) %>%
+  mutate(pct_change = round((n_students / first(n_students) - 1) * 100, 1))
+
+stopifnot(nrow(lep_trend) > 0)
+lep_trend
+#> # A tibble: 5 x 3
+#>   end_year n_students pct_change
+#>      <dbl>      <dbl>      <dbl>
+#> 1     2018     118569        0
+#> 2     2019     127843        7.8
+#> 3     2020     126240        6.5
+#> 4     2021     131322       10.8
+#> 5     2024     168383       42
+```
+
+![English Learners
+trend](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/lep-chart-1.png)
+
+English Learners trend
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#english-learners-grew-42-in-six-years)
+
+### 10. Wake County grew 33% since 2006 but may have peaked
+
+Wake County added nearly 40,000 students from 2006 to 2020, then dipped
+slightly by 2024. After years of relentless growth, has the Research
+Triangle’s anchor district plateaued?
+
+``` r
+enr_wake <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
+
+wake_trend <- enr_wake %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         grepl("Wake", district_name)) %>%
+  select(end_year, district_name, n_students) %>%
+  mutate(change = n_students - lag(n_students))
+
+stopifnot(nrow(wake_trend) > 0)
+wake_trend
+#> # A tibble: 5 x 4
+#>   end_year district_name       n_students change
+#>      <dbl> <chr>                    <dbl>  <dbl>
+#> 1     2006 Wake County Schools     120367     NA
+#> 2     2010 Wake County Schools     139064  18697
+#> 3     2015 Wake County Schools     153488  14424
+#> 4     2020 Wake County Schools     160622   7134
+#> 5     2024 Wake County Schools     159675   -947
+```
+
+![Wake County
+growth](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/wake-chart-1.png)
+
+Wake County growth
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#wake-county-grew-33-since-2006-but-may-have-peaked)
+
+### 11. The coast is growing while the Piedmont shrinks
+
+Coastal counties (New Hanover, Brunswick, Pender) gained students while
+Piedmont cities (Guilford, Forsyth, Alamance) lost nearly 9,000 since
+2015.
+
+``` r
+enr_regional <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
+
+coastal <- c("New Hanover", "Brunswick", "Pender")
+piedmont <- c("Guilford", "Forsyth", "Alamance")
+
+regional <- enr_regional %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(region = case_when(
+    grepl(paste(coastal, collapse = "|"), district_name) ~ "Coast",
+    grepl(paste(piedmont, collapse = "|"), district_name) ~ "Piedmont",
+    TRUE ~ "Other"
+  )) %>%
+  filter(region %in% c("Coast", "Piedmont")) %>%
+  group_by(end_year, region) %>%
+  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+stopifnot(nrow(regional) == 4)
+regional
+#> # A tibble: 4 x 3
+#>   end_year region    total
+#>      <dbl> <chr>     <dbl>
+#> 1     2015 Coast     46807
+#> 2     2015 Piedmont 147754
+#> 3     2024 Coast     48559
+#> 4     2024 Piedmont 138801
+```
+
+![Coast vs
+Piedmont](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/regional-chart-1.png)
+
+Coast vs Piedmont
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#the-coast-is-growing-while-the-piedmont-shrinks)
+
+### 12. Union County grew 32% since 2006 on Charlotte suburban boom
+
+Union County Public Schools went from 31,330 to 41,378 students.
+Weddington, Waxhaw, and Indian Trail fueled the growth, though the pace
+has slowed since 2015.
+
+``` r
+enr_union <- fetch_enr_multi(c(2006, 2010, 2015, 2020, 2024), use_cache = TRUE)
+
+union_trend <- enr_union %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL",
+         grepl("Union", district_name)) %>%
+  select(end_year, district_name, n_students)
+
+stopifnot(nrow(union_trend) > 0)
+union_trend
+#> # A tibble: 5 x 3
+#>   end_year district_name               n_students
+#>      <dbl> <chr>                            <dbl>
+#> 1     2006 Union County Public Schools      31330
+#> 2     2010 Union County Public Schools      38282
+#> 3     2015 Union County Public Schools      41296
+#> 4     2020 Union County Public Schools      41452
+#> 5     2024 Union County Public Schools      41378
+```
+
+![Union County
+growth](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/union-growth-chart-1.png)
+
+Union County growth
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#union-county-grew-32-since-2006-on-charlotte-suburban-boom)
+
+### 13. Asheville-area mountain counties lost 10% of students
+
+Seven mountain counties around Asheville (Buncombe, Henderson, Haywood,
+Madison, Transylvania, Yancey, Mitchell) dropped from 55,623 to 49,817
+students since 2015.
+
+``` r
+enr_mountain <- fetch_enr_multi(c(2015, 2024), use_cache = TRUE)
+
+mountain <- c("Buncombe", "Henderson", "Haywood", "Madison",
+              "Transylvania", "Yancey", "Mitchell")
+
+mountain_data <- enr_mountain %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(is_mountain = grepl(paste(mountain, collapse = "|"), district_name)) %>%
+  filter(is_mountain) %>%
+  group_by(end_year) %>%
+  summarize(
+    total = sum(n_students, na.rm = TRUE),
+    n_districts = n(),
+    .groups = "drop"
+  )
+
+stopifnot(nrow(mountain_data) == 2)
+mountain_data
+#> # A tibble: 2 x 3
+#>   end_year total n_districts
+#>      <dbl> <dbl>       <int>
+#> 1     2015 55623           7
+#> 2     2024 49817           7
+```
+
+![Mountain
+counties](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/mountain-chart-1.png)
+
+Mountain counties
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#asheville-area-mountain-counties-lost-10-of-students)
+
+### 14. Special education holds steady at 13-14% of enrollment
+
+NC’s special education population has been remarkably stable at around
+13-14% of total enrollment since 2018, even as overall enrollment
+fluctuated with COVID.
+
+``` r
+enr_sped <- fetch_enr_multi(c(2018, 2019, 2020, 2021, 2024), use_cache = TRUE)
+
+sped_trend <- enr_sped %>%
+  filter(is_state, grade_level == "TOTAL",
+         subgroup %in% c("total_enrollment", "special_ed")) %>%
+  select(end_year, subgroup, n_students) %>%
+  pivot_wider(names_from = subgroup, values_from = n_students) %>%
+  mutate(
+    pct_sped = round(special_ed / total_enrollment * 100, 1),
+    sped_change = round((special_ed / first(special_ed) - 1) * 100, 1)
+  )
+
+stopifnot(nrow(sped_trend) > 0)
+sped_trend
+#> # A tibble: 5 x 5
+#>   end_year total_enrollment special_ed pct_sped sped_change
+#>      <dbl>            <dbl>      <dbl>    <dbl>       <dbl>
+#> 1     2018          1521108     208352     13.7         0
+#> 2     2019          1535687     211629     13.8         1.6
+#> 3     2020          1525592     209750     13.7         0.7
+#> 4     2021          1469401     204434     13.9        -1.9
+#> 5     2024          1508194     202380     13.4        -2.9
+```
+
+![Special ed
+trend](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/sped-chart-1.png)
+
+Special ed trend
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#special-education-holds-steady-at-13-14-of-enrollment)
+
+### 15. Triangle vs Triad: diverging metro areas
+
+The Research Triangle (Wake, Durham, Orange, Johnston, Chatham) grew
+from 237K to 243K while the Piedmont Triad (Guilford, Forsyth, Davidson,
+Randolph, Alamance) shrank from 185K to 171K since 2015.
+
+``` r
+enr_metro <- fetch_enr_multi(c(2015, 2020, 2024), use_cache = TRUE)
+
+triangle <- c("Wake", "Durham", "Orange", "Johnston", "Chatham")
+triad <- c("Guilford", "Forsyth", "Davidson", "Randolph", "Alamance")
+
+metro_data <- enr_metro %>%
+  filter(is_district, subgroup == "total_enrollment", grade_level == "TOTAL") %>%
+  mutate(region = case_when(
+    grepl(paste(triangle, collapse = "|"), district_name) ~ "Triangle",
+    grepl(paste(triad, collapse = "|"), district_name) ~ "Triad",
+    TRUE ~ "Other"
+  )) %>%
+  filter(region %in% c("Triangle", "Triad")) %>%
+  group_by(end_year, region) %>%
+  summarize(total = sum(n_students, na.rm = TRUE), .groups = "drop")
+
+stopifnot(nrow(metro_data) == 6)
+metro_data
+#> # A tibble: 6 x 3
+#>   end_year region    total
+#>      <dbl> <chr>     <dbl>
+#> 1     2015 Triad    184979
+#> 2     2015 Triangle 236723
+#> 3     2020 Triad    181208
+#> 4     2020 Triangle 246320
+#> 5     2024 Triad    171352
+#> 6     2024 Triangle 243012
+```
+
+![Triangle vs
+Triad](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks_files/figure-html/triangle-triad-chart-1.png)
+
+Triangle vs Triad
+
+[(source)](https://almartin82.github.io/ncschooldata/articles/enrollment_hooks.html#triangle-vs-triad-diverging-metro-areas)
 
 # Package index
 
