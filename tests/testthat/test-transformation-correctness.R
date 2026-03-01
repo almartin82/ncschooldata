@@ -200,7 +200,7 @@ test_that("grade_pk maps to PK (not PRE_K)", {
 # ==============================================================================
 
 test_that("enrollment subgroups use standard naming", {
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -219,7 +219,7 @@ test_that("enrollment subgroups use standard naming", {
 })
 
 test_that("no non-standard subgroup names leak through", {
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   actual <- unique(enr$subgroup)
@@ -1007,7 +1007,7 @@ test_that("assessment available years exclude 2020", {
 
 test_that("2024 enrollment: state total is 1,508,194", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   state_total <- enr[enr$type == "State" &
@@ -1020,7 +1020,7 @@ test_that("2024 enrollment: state total is 1,508,194", {
 
 test_that("2024 enrollment: 115 districts", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   dist_ids <- unique(enr$district_id[enr$type == "District"])
@@ -1030,7 +1030,7 @@ test_that("2024 enrollment: 115 districts", {
 
 test_that("2024 enrollment: Wake County total is 159,675", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   wake <- enr[enr$district_id == "920" & enr$type == "District" &
@@ -1042,7 +1042,7 @@ test_that("2024 enrollment: Wake County total is 159,675", {
 
 test_that("2024 enrollment: CMS (600) total is 140,415", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   cms <- enr[enr$district_id == "600" & enr$type == "District" &
@@ -1054,7 +1054,7 @@ test_that("2024 enrollment: CMS (600) total is 140,415", {
 
 test_that("2024 enrollment: Wake County white = 65,222", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   wake_white <- enr[enr$district_id == "920" & enr$type == "District" &
@@ -1066,7 +1066,7 @@ test_that("2024 enrollment: Wake County white = 65,222", {
 
 test_that("2024 enrollment: state has 13 subgroups", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   subgroups <- unique(enr$subgroup)
@@ -1076,7 +1076,7 @@ test_that("2024 enrollment: state has 13 subgroups", {
 
 test_that("2024 enrollment: 219 charter campuses", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   charter_count <- sum(
@@ -1091,7 +1091,7 @@ test_that("2024 enrollment: 219 charter campuses", {
 
 test_that("2006 enrollment: state total is 1,390,168", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2006, tidy = TRUE, use_cache = TRUE)
   state_total <- enr[enr$type == "State" &
@@ -1103,7 +1103,7 @@ test_that("2006 enrollment: state total is 1,390,168", {
 
 test_that("2006 enrollment: only total_enrollment subgroup available", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2006, tidy = TRUE, use_cache = TRUE)
   subgroups <- unique(enr$subgroup)
@@ -1113,7 +1113,7 @@ test_that("2006 enrollment: only total_enrollment subgroup available", {
 
 test_that("2006 enrollment: Wake County total is 120,367", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2006, tidy = TRUE, use_cache = TRUE)
   wake <- enr[enr$district_id == "920" & enr$type == "District" &
@@ -1129,7 +1129,7 @@ test_that("2006 enrollment: Wake County total is 120,367", {
 
 test_that("district count is consistent across years", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   for (yr in c(2006, 2018, 2024)) {
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
@@ -1143,7 +1143,7 @@ test_that("district count is consistent across years", {
 
 test_that("Wake County (920) appears in all cached years", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   for (yr in c(2006, 2010, 2015, 2020, 2024)) {
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
@@ -1158,7 +1158,7 @@ test_that("Wake County (920) appears in all cached years", {
 
 test_that("grade levels are consistent across years", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   for (yr in c(2006, 2018, 2024)) {
     enr <- fetch_enr(yr, tidy = TRUE, use_cache = TRUE)
@@ -1174,7 +1174,7 @@ test_that("grade levels are consistent across years", {
 
 test_that("tidy data has exactly one state row per subgroup per grade", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   state_data <- enr[enr$type == "State" & enr$grade_level == "TOTAL", ]
@@ -1195,7 +1195,7 @@ test_that("tidy data has exactly one state row per subgroup per grade", {
 
 test_that("2024 assessment: school 920302 CCR EOG ALL = 810 tested, 31.6% proficient", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   assess <- fetch_assessment(2024, tidy = TRUE, use_cache = TRUE)
   school <- assess[assess$agency_code == "920302" &
@@ -1214,7 +1214,7 @@ test_that("2024 assessment: school 920302 CCR EOG ALL = 810 tested, 31.6% profic
 
 test_that("2024 assessment: district 00A CCR EOG ALL = 2578 tested, 27.2%", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   assess <- fetch_assessment(2024, tidy = TRUE, use_cache = TRUE)
   dist <- assess[assess$agency_code == "00A000" &
@@ -1231,7 +1231,7 @@ test_that("2024 assessment: district 00A CCR EOG ALL = 2578 tested, 27.2%", {
 
 test_that("2024 assessment: has 6 standards", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   assess <- fetch_assessment(2024, tidy = TRUE, use_cache = TRUE)
   standards <- sort(unique(assess$standard))
@@ -1241,7 +1241,7 @@ test_that("2024 assessment: has 6 standards", {
 
 test_that("2024 assessment: has 10 subjects", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   assess <- fetch_assessment(2024, tidy = TRUE, use_cache = TRUE)
   subjects <- sort(unique(assess$subject))
@@ -1251,7 +1251,7 @@ test_that("2024 assessment: has 10 subjects", {
 
 test_that("2024 assessment: has 21 subgroups", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   assess <- fetch_assessment(2024, tidy = TRUE, use_cache = TRUE)
   subgroups <- sort(unique(assess$subgroup))
@@ -1265,7 +1265,7 @@ test_that("2024 assessment: has 21 subgroups", {
 
 test_that("2024 assessment: no state-level data (only district and school)", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   assess <- fetch_assessment(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -1276,7 +1276,7 @@ test_that("2024 assessment: no state-level data (only district and school)", {
 
 test_that("2024 assessment: 216 distinct districts", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   assess <- fetch_assessment(2024, tidy = TRUE, use_cache = TRUE)
   n_dist <- length(unique(assess$district_id[assess$level == "district"]))
@@ -1381,7 +1381,7 @@ test_that("calc_proficiency_gap returns empty for missing subgroups", {
 
 test_that("enrollment n_students are non-negative", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -1390,7 +1390,7 @@ test_that("enrollment n_students are non-negative", {
 
 test_that("enrollment pct values are between 0 and 1 (except rare anomalies)", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -1405,7 +1405,7 @@ test_that("enrollment pct values are between 0 and 1 (except rare anomalies)", {
 
 test_that("enrollment has no Inf or NaN in numeric columns", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -1419,7 +1419,7 @@ test_that("enrollment has no Inf or NaN in numeric columns", {
 
 test_that("assessment pct_proficient is 0-100 range", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   assess <- fetch_assessment(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -1430,7 +1430,7 @@ test_that("assessment pct_proficient is 0-100 range", {
 
 test_that("assessment n_tested are non-negative", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   assess <- fetch_assessment(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -1570,7 +1570,7 @@ test_that("process_directory adds directory_type column", {
 
 test_that("2024 enrollment: NC has 100 unique counties", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
 
@@ -1580,7 +1580,7 @@ test_that("2024 enrollment: NC has 100 unique counties", {
 
 test_that("2024 enrollment: state-level rows have NA county", {
   skip_on_cran()
-  devtools::load_all(".")
+
 
   enr <- fetch_enr(2024, tidy = TRUE, use_cache = TRUE)
   state_rows <- enr[enr$type == "State", ]
